@@ -1,6 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { createRequire } from 'module';
 import { storage } from "./storage";
 import { 
   insertContactMessageSchema, 
@@ -90,22 +89,6 @@ const requireAdminSession = async (req: any, res: any, next: any) => {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Mount Reusable API endpoints (Supabase + Stripe helpers)
-  try {
-    const require = createRequire(import.meta.url);
-    const createCheckoutSession = require('./ReusableAPI/create-checkout-session');
-    const getCheckoutSession = require('./ReusableAPI/get-checkout-session');
-    const stripeWebhook = require('./ReusableAPI/stripe-webhook');
-    const ordersHandler = require('./ReusableAPI/orders');
-
-    app.post('/api/create-checkout-session', (req, res) => createCheckoutSession(req, res));
-    app.get('/api/get-checkout-session', (req, res) => getCheckoutSession(req, res));
-    app.post('/api/stripe-webhook', (req, res) => stripeWebhook(req, res));
-    app.all('/api/orders', (req, res) => ordersHandler(req, res));
-    app.all('/api/orders/*', (req, res) => ordersHandler(req, res));
-  } catch (e) {
-    console.warn('ReusableAPI handlers not mounted:', e && (e as any).message ? (e as any).message : e);
-  }
-
   // Note: Contact form now uses Formspree integration
   // No backend contact routes needed
 
