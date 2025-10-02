@@ -5,7 +5,9 @@
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "noEmit": true,
-    "module": "ESNext",
+    "module": "NodeNext",                // 🔑 Fix: must match moduleResolution
+    "moduleResolution": "NodeNext",      // 🔑 Keeps .js imports valid in ESM
+    "target": "ES2022",                  // or ESNext if you prefer
     "strict": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "jsx": "preserve",
@@ -13,7 +15,6 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
     "outDir": "dist",
-    "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {

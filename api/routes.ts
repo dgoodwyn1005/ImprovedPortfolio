@@ -19,7 +19,7 @@ import {
   insertThemeConfigSchema
 } from "@shared/schema";
 import { z } from "zod";
-import { verifySupabaseToken } from './supabase';
+import { verifySupabaseToken } from './supabase.js';
 
 // Simple admin authentication middleware for login
 const authenticateAdminLogin = async (req: any, res: any, next: any) => {
