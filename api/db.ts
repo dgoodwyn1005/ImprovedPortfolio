@@ -1,26 +1,24 @@
-import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from '../shared/schema.js';
+// api/db.ts
+import { createClient } from '@supabase/supabase-js';
 
-// Export once and assign at runtime
-export let pool: Pool | null = null;
-export let db: any = null;
-
-if (!process.env.DATABASE_URL) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error(
-      'DATABASE_URL must be set. Did you forget to provision a database?',
-    );
-  }
-
-  console.warn('[api/db] WARNING: DATABASE_URL not set. Exporting stubbed db for development.');
-  pool = null;
-  db = new Proxy({}, {
-    get() {
-      return () => { throw new Error('Drizzle client not available in development without DATABASE_URL'); };
-    }
-  });
-} else {
-  pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  db = drizzle(pool);
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('Supabase environment variables are not set');
 }
+
+// Server-side client (use Service Role key for full access)
+export const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { 
+    auth: { 
+      persistSession: false,
+      autoRefreshToken: false
+    },
+    db: { 
+      schema: 'public' 
+    }
+  }
+);
+
+// Named export for backwards compatibility
+export { supabase as db };

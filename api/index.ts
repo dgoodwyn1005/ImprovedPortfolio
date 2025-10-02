@@ -1,10 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes.js";
 import path from "path";
+import { supabase } from "./db.js";
+import { SupabaseSessionStore } from './supabase-session-store.js';
 
 const app = express();
+
 // Keep a copy of the raw body on the request for endpoints that need
 // to verify signatures (Stripe webhooks). We still parse JSON for normal routes.
 app.use((req, res, next) => {
@@ -38,7 +40,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Session configuration with PostgreSQL fallback for development
+// Session configuration with Supabase
 const sessionConfig: any = {
   secret: process.env.SESSION_SECRET || (() => {
     if (process.env.NODE_ENV === 'production') {
@@ -55,15 +57,10 @@ const sessionConfig: any = {
   }
 };
 
-// Use PostgreSQL session store when DATABASE_URL is available (production/Vercel)
-if (process.env.DATABASE_URL) {
-  const PgSession = connectPgSimple(session);
-  sessionConfig.store = new PgSession({
-    conString: process.env.DATABASE_URL,
-    tableName: 'user_sessions',
-    createTableIfMissing: true,
-  });
-  console.log('Using PostgreSQL session store');
+// Use Supabase session store
+if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  sessionConfig.store = new SupabaseSessionStore(supabase, 'user_sessions');
+  console.log('Using Supabase session store');
 } else {
   console.log('Using in-memory session store for development');
 }

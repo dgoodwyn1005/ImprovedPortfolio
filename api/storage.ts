@@ -1,5 +1,39 @@
-import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type PortfolioProject, type InsertPortfolioProject, type FeaturedProject, type InsertFeaturedProject, type SiteSettings, type InsertSiteSettings, type AdminCredentials, type InsertAdminCredentials, type Testimonial, type InsertTestimonial, type PianoSample, type InsertPianoSample, type LivePerformance, type InsertLivePerformance, type Service, type InsertService, type Lead, type InsertLead, type Order, type InsertOrder, type Media, type InsertMedia, type SiteConfig, type InsertSiteConfig, type PageContent, type InsertPageContent, type ThemeConfig, type InsertThemeConfig } from "../shared/schema.js";
-import { randomUUID } from "crypto";
+// api/storage.ts
+import { supabase } from "./db.js";
+import type { 
+  User, 
+  InsertUser, 
+  ContactMessage, 
+  InsertContactMessage, 
+  PortfolioProject, 
+  InsertPortfolioProject, 
+  FeaturedProject, 
+  InsertFeaturedProject, 
+  SiteSettings, 
+  InsertSiteSettings, 
+  AdminCredentials, 
+  InsertAdminCredentials, 
+  Testimonial, 
+  InsertTestimonial, 
+  PianoSample, 
+  InsertPianoSample, 
+  LivePerformance, 
+  InsertLivePerformance, 
+  Service, 
+  InsertService, 
+  Lead, 
+  InsertLead, 
+  Order, 
+  InsertOrder, 
+  Media, 
+  InsertMedia, 
+  SiteConfig, 
+  InsertSiteConfig, 
+  PageContent, 
+  InsertPageContent, 
+  ThemeConfig, 
+  InsertThemeConfig 
+} from "../shared/schema.js";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -8,45 +42,37 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   getContactMessages(): Promise<ContactMessage[]>;
   
-  // Portfolio management
   getPortfolioProjects(): Promise<PortfolioProject[]>;
   createPortfolioProject(project: InsertPortfolioProject): Promise<PortfolioProject>;
   updatePortfolioProject(id: string, project: Partial<InsertPortfolioProject>): Promise<PortfolioProject>;
   deletePortfolioProject(id: string): Promise<void>;
   
-  // Featured projects management
   getFeaturedProjects(): Promise<FeaturedProject[]>;
   createFeaturedProject(project: InsertFeaturedProject): Promise<FeaturedProject>;
   updateFeaturedProject(id: string, project: Partial<InsertFeaturedProject>): Promise<FeaturedProject>;
   deleteFeaturedProject(id: string): Promise<void>;
   
-  // Site settings
   getSiteSettings(): Promise<SiteSettings[]>;
   updateSiteSettings(key: string, value: any): Promise<SiteSettings>;
   
-  // Admin credentials
   getAdminCredentials(): Promise<AdminCredentials | undefined>;
   updateAdminCredentials(credentials: InsertAdminCredentials): Promise<AdminCredentials>;
   
-  // Testimonials management
   getTestimonials(): Promise<Testimonial[]>;
   createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
   updateTestimonial(id: string, testimonial: Partial<InsertTestimonial>): Promise<Testimonial>;
   deleteTestimonial(id: string): Promise<void>;
   
-  // Piano samples management
   getPianoSamples(): Promise<PianoSample[]>;
   createPianoSample(sample: InsertPianoSample): Promise<PianoSample>;
   updatePianoSample(id: string, sample: Partial<InsertPianoSample>): Promise<PianoSample>;
   deletePianoSample(id: string): Promise<void>;
   
-  // Live performances management
   getLivePerformances(): Promise<LivePerformance[]>;
   createLivePerformance(performance: InsertLivePerformance): Promise<LivePerformance>;
   updateLivePerformance(id: string, performance: Partial<InsertLivePerformance>): Promise<LivePerformance>;
   deleteLivePerformance(id: string): Promise<void>;
 
-  // Services management
   getServices(): Promise<Service[]>;
   getServicesByCategory(category: string): Promise<Service[]>;
   getService(id: string): Promise<Service | undefined>;
@@ -54,28 +80,24 @@ export interface IStorage {
   updateService(id: string, service: Partial<InsertService>): Promise<Service>;
   deleteService(id: string): Promise<void>;
 
-  // Leads management
   getLeads(): Promise<Lead[]>;
   getLead(id: string): Promise<Lead | undefined>;
   createLead(lead: InsertLead): Promise<Lead>;
   updateLead(id: string, lead: Partial<InsertLead>): Promise<Lead>;
   deleteLead(id: string): Promise<void>;
 
-  // Orders management
   getOrders(): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, order: Partial<InsertOrder>): Promise<Order>;
   deleteOrder(id: string): Promise<void>;
 
-  // Media management
   getMediaFiles(): Promise<Media[]>;
   getMediaFile(id: string): Promise<Media | undefined>;
   createMediaFile(media: InsertMedia): Promise<Media>;
   updateMediaFile(id: string, media: Partial<InsertMedia>): Promise<Media>;
   deleteMediaFile(id: string): Promise<void>;
 
-  // Site configuration management
   getSiteConfigs(): Promise<SiteConfig[]>;
   getSiteConfigsBySection(section: string): Promise<SiteConfig[]>;
   getSiteConfig(id: string): Promise<SiteConfig | undefined>;
@@ -83,7 +105,6 @@ export interface IStorage {
   updateSiteConfig(id: string, config: Partial<InsertSiteConfig>): Promise<SiteConfig>;
   deleteSiteConfig(id: string): Promise<void>;
 
-  // Page content management
   getPageContents(): Promise<PageContent[]>;
   getPageContentsByPage(page: string): Promise<PageContent[]>;
   getPageContent(id: string): Promise<PageContent | undefined>;
@@ -91,7 +112,6 @@ export interface IStorage {
   updatePageContent(id: string, content: Partial<InsertPageContent>): Promise<PageContent>;
   deletePageContent(id: string): Promise<void>;
 
-  // Theme configuration management
   getThemeConfigs(): Promise<ThemeConfig[]>;
   getActiveTheme(): Promise<ThemeConfig | undefined>;
   getThemeConfig(id: string): Promise<ThemeConfig | undefined>;
@@ -101,506 +121,852 @@ export interface IStorage {
   setActiveTheme(id: string): Promise<ThemeConfig>;
 }
 
-import { db } from "./db.js";
-import { users, contactMessages, portfolioProjects, featuredProjects, siteSettings, adminCredentials, testimonials, pianoSamples, livePerformances, services, leads, orders, media, siteConfig, pageContent, themeConfig } from "../shared/schema.js";
-import { eq, desc, and } from "drizzle-orm";
-
 export class DatabaseStorage implements IStorage {
+  // ==================== USER MANAGEMENT ====================
+  
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined; // Not found
+      throw error;
+    }
+    return data;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
+    const { data, error } = await supabase
+      .from('users')
+      .insert(insertUser)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
+  // ==================== CONTACT MESSAGES ====================
+  
   async createContactMessage(insertMessage: InsertContactMessage): Promise<ContactMessage> {
-    const [contactMessage] = await db
-      .insert(contactMessages)
-      .values(insertMessage)
-      .returning();
-    return contactMessage;
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .insert(insertMessage)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async getContactMessages(): Promise<ContactMessage[]> {
-    return await db
-      .select()
-      .from(contactMessages)
-      .orderBy(desc(contactMessages.createdAt));
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
-  // Portfolio management
+  // ==================== PORTFOLIO PROJECTS ====================
+  
   async getPortfolioProjects(): Promise<PortfolioProject[]> {
-    return await db
-      .select()
-      .from(portfolioProjects)
-      .orderBy(portfolioProjects.order, desc(portfolioProjects.createdAt));
+    const { data, error } = await supabase
+      .from('portfolio_projects')
+      .select('*')
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async createPortfolioProject(project: InsertPortfolioProject): Promise<PortfolioProject> {
-    const [portfolioProject] = await db
-      .insert(portfolioProjects)
-      .values(project)
-      .returning();
-    return portfolioProject;
+    const { data, error } = await supabase
+      .from('portfolio_projects')
+      .insert(project)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updatePortfolioProject(id: string, project: Partial<InsertPortfolioProject>): Promise<PortfolioProject> {
-    const [portfolioProject] = await db
-      .update(portfolioProjects)
-      .set({ ...project, updatedAt: new Date() })
-      .where(eq(portfolioProjects.id, id))
-      .returning();
-    return portfolioProject;
+    const { data, error } = await supabase
+      .from('portfolio_projects')
+      .update({ ...project, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deletePortfolioProject(id: string): Promise<void> {
-    await db.delete(portfolioProjects).where(eq(portfolioProjects.id, id));
+    const { error } = await supabase
+      .from('portfolio_projects')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Featured projects management
+  // ==================== FEATURED PROJECTS ====================
+  
   async getFeaturedProjects(): Promise<FeaturedProject[]> {
-    return await db
-      .select()
-      .from(featuredProjects)
-      .orderBy(featuredProjects.order, desc(featuredProjects.createdAt));
+    const { data, error } = await supabase
+      .from('featured_projects')
+      .select('*')
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async createFeaturedProject(project: InsertFeaturedProject): Promise<FeaturedProject> {
-    const [featuredProject] = await db
-      .insert(featuredProjects)
-      .values(project)
-      .returning();
-    return featuredProject;
+    const { data, error } = await supabase
+      .from('featured_projects')
+      .insert(project)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateFeaturedProject(id: string, project: Partial<InsertFeaturedProject>): Promise<FeaturedProject> {
-    const [featuredProject] = await db
-      .update(featuredProjects)
-      .set({ ...project, updatedAt: new Date() })
-      .where(eq(featuredProjects.id, id))
-      .returning();
-    return featuredProject;
+    const { data, error } = await supabase
+      .from('featured_projects')
+      .update({ ...project, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteFeaturedProject(id: string): Promise<void> {
-    await db.delete(featuredProjects).where(eq(featuredProjects.id, id));
+    const { error } = await supabase
+      .from('featured_projects')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Site settings
+  // ==================== SITE SETTINGS ====================
+  
   async getSiteSettings(): Promise<SiteSettings[]> {
-    return await db.select().from(siteSettings);
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('*');
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async updateSiteSettings(key: string, value: any): Promise<SiteSettings> {
-    const [setting] = await db
-      .insert(siteSettings)
-      .values({ key, value })
-      .onConflictDoUpdate({
-        target: siteSettings.key,
-        set: { value, updatedAt: new Date() }
-      })
-      .returning();
-    return setting;
+    // Try to update first
+    const { data: existing } = await supabase
+      .from('site_settings')
+      .select('*')
+      .eq('key', key)
+      .single();
+    
+    if (existing) {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .update({ value, updated_at: new Date().toISOString() })
+        .eq('key', key)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    } else {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .insert({ key, value })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    }
   }
 
-  // Admin credentials
+  // ==================== ADMIN CREDENTIALS ====================
+  
   async getAdminCredentials(): Promise<AdminCredentials | undefined> {
-    const [credentials] = await db.select().from(adminCredentials).limit(1);
-    return credentials || undefined;
+    const { data, error } = await supabase
+      .from('admin_credentials')
+      .select('*')
+      .limit(1)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async updateAdminCredentials(credentials: InsertAdminCredentials): Promise<AdminCredentials> {
     // Delete existing credentials first
-    await db.delete(adminCredentials);
+    await supabase.from('admin_credentials').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     
-    const [newCredentials] = await db
-      .insert(adminCredentials)
-      .values(credentials)
-      .returning();
-    return newCredentials;
+    const { data, error } = await supabase
+      .from('admin_credentials')
+      .insert(credentials)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
+  // ==================== TESTIMONIALS ====================
+  
   async getTestimonials(): Promise<Testimonial[]> {
-    return await db
-      .select()
-      .from(testimonials)
-      .where(eq(testimonials.isActive, true))
-      .orderBy(desc(testimonials.order), desc(testimonials.createdAt));
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('order', { ascending: false })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
-    const [testimonial] = await db
-      .insert(testimonials)
-      .values(insertTestimonial)
-      .returning();
-    return testimonial;
+    const { data, error } = await supabase
+      .from('testimonials')
+      .insert(insertTestimonial)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateTestimonial(id: string, updateData: Partial<InsertTestimonial>): Promise<Testimonial> {
-    const [testimonial] = await db
-      .update(testimonials)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(testimonials.id, id))
-      .returning();
-    return testimonial;
+    const { data, error } = await supabase
+      .from('testimonials')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteTestimonial(id: string): Promise<void> {
-    await db.delete(testimonials).where(eq(testimonials.id, id));
+    const { error } = await supabase
+      .from('testimonials')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Piano samples management
+  // ==================== PIANO SAMPLES ====================
+  
   async getPianoSamples(): Promise<PianoSample[]> {
-    return await db
-      .select()
-      .from(pianoSamples)
-      .where(eq(pianoSamples.isActive, true))
-      .orderBy(pianoSamples.order, desc(pianoSamples.createdAt));
+    const { data, error } = await supabase
+      .from('piano_samples')
+      .select('*')
+      .eq('is_active', true)
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async createPianoSample(insertSample: InsertPianoSample): Promise<PianoSample> {
-    const [sample] = await db
-      .insert(pianoSamples)
-      .values(insertSample)
-      .returning();
-    return sample;
+    const { data, error } = await supabase
+      .from('piano_samples')
+      .insert(insertSample)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updatePianoSample(id: string, updateData: Partial<InsertPianoSample>): Promise<PianoSample> {
-    const [sample] = await db
-      .update(pianoSamples)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(pianoSamples.id, id))
-      .returning();
-    return sample;
+    const { data, error } = await supabase
+      .from('piano_samples')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deletePianoSample(id: string): Promise<void> {
-    await db.delete(pianoSamples).where(eq(pianoSamples.id, id));
+    const { error } = await supabase
+      .from('piano_samples')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Live performances management
+  // ==================== LIVE PERFORMANCES ====================
+  
   async getLivePerformances(): Promise<LivePerformance[]> {
-    return await db
-      .select()
-      .from(livePerformances)
-      .where(eq(livePerformances.isActive, true))
-      .orderBy(livePerformances.order, desc(livePerformances.createdAt));
+    const { data, error } = await supabase
+      .from('live_performances')
+      .select('*')
+      .eq('is_active', true)
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async createLivePerformance(insertPerformance: InsertLivePerformance): Promise<LivePerformance> {
-    const [performance] = await db
-      .insert(livePerformances)
-      .values(insertPerformance)
-      .returning();
-    return performance;
+    const { data, error } = await supabase
+      .from('live_performances')
+      .insert(insertPerformance)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateLivePerformance(id: string, updateData: Partial<InsertLivePerformance>): Promise<LivePerformance> {
-    const [performance] = await db
-      .update(livePerformances)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(livePerformances.id, id))
-      .returning();
-    return performance;
+    const { data, error } = await supabase
+      .from('live_performances')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteLivePerformance(id: string): Promise<void> {
-    await db.delete(livePerformances).where(eq(livePerformances.id, id));
+    const { error } = await supabase
+      .from('live_performances')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Services management
+  // ==================== SERVICES ====================
+  
   async getServices(): Promise<Service[]> {
-    return await db
-      .select()
-      .from(services)
-      .where(eq(services.isPublished, true))
-      .orderBy(services.order, desc(services.createdAt));
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('is_published', true)
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getServicesByCategory(category: string): Promise<Service[]> {
-    return await db
-      .select()
-      .from(services)
-      .where(eq(services.category, category))
-      .orderBy(services.order, desc(services.createdAt));
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('category', category)
+      .order('order', { ascending: true })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getService(id: string): Promise<Service | undefined> {
-    const [service] = await db.select().from(services).where(eq(services.id, id));
-    return service || undefined;
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createService(insertService: InsertService): Promise<Service> {
-    const [service] = await db
-      .insert(services)
-      .values(insertService)
-      .returning();
-    return service;
+    const { data, error } = await supabase
+      .from('services')
+      .insert(insertService)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateService(id: string, updateData: Partial<InsertService>): Promise<Service> {
-    const [service] = await db
-      .update(services)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(services.id, id))
-      .returning();
-    return service;
+    const { data, error } = await supabase
+      .from('services')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteService(id: string): Promise<void> {
-    await db.delete(services).where(eq(services.id, id));
+    const { error } = await supabase
+      .from('services')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Leads management
+  // ==================== LEADS ====================
+  
   async getLeads(): Promise<Lead[]> {
-    return await db
-      .select()
-      .from(leads)
-      .orderBy(desc(leads.createdAt));
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getLead(id: string): Promise<Lead | undefined> {
-    const [lead] = await db.select().from(leads).where(eq(leads.id, id));
-    return lead || undefined;
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createLead(insertLead: InsertLead): Promise<Lead> {
-    const [lead] = await db
-      .insert(leads)
-      .values(insertLead)
-      .returning();
-    return lead;
+    const { data, error } = await supabase
+      .from('leads')
+      .insert(insertLead)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateLead(id: string, updateData: Partial<InsertLead>): Promise<Lead> {
-    const [lead] = await db
-      .update(leads)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(leads.id, id))
-      .returning();
-    return lead;
+    const { data, error } = await supabase
+      .from('leads')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteLead(id: string): Promise<void> {
-    await db.delete(leads).where(eq(leads.id, id));
+    const { error } = await supabase
+      .from('leads')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Orders management
+  // ==================== ORDERS ====================
+  
   async getOrders(): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .orderBy(desc(orders.createdAt));
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    return order || undefined;
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const [order] = await db
-      .insert(orders)
-      .values(insertOrder)
-      .returning();
-    return order;
+    const { data, error } = await supabase
+      .from('orders')
+      .insert(insertOrder)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateOrder(id: string, updateData: Partial<InsertOrder>): Promise<Order> {
-    const [order] = await db
-      .update(orders)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(orders.id, id))
-      .returning();
-    return order;
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteOrder(id: string): Promise<void> {
-    await db.delete(orders).where(eq(orders.id, id));
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Media management
+  // ==================== MEDIA ====================
+  
   async getMediaFiles(): Promise<Media[]> {
-    return await db
-      .select()
-      .from(media)
-      .orderBy(desc(media.createdAt));
+    const { data, error } = await supabase
+      .from('media')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getMediaFile(id: string): Promise<Media | undefined> {
-    const [mediaFile] = await db.select().from(media).where(eq(media.id, id));
-    return mediaFile || undefined;
+    const { data, error } = await supabase
+      .from('media')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createMediaFile(insertMedia: InsertMedia): Promise<Media> {
-    const [mediaFile] = await db
-      .insert(media)
-      .values(insertMedia)
-      .returning();
-    return mediaFile;
+    const { data, error } = await supabase
+      .from('media')
+      .insert(insertMedia)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateMediaFile(id: string, updateData: Partial<InsertMedia>): Promise<Media> {
-    const [mediaFile] = await db
-      .update(media)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(media.id, id))
-      .returning();
-    return mediaFile;
+    const { data, error } = await supabase
+      .from('media')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteMediaFile(id: string): Promise<void> {
-    await db.delete(media).where(eq(media.id, id));
+    const { error } = await supabase
+      .from('media')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Site configuration management
+  // ==================== SITE CONFIGURATION ====================
+  
   async getSiteConfigs(): Promise<SiteConfig[]> {
-    return await db
-      .select()
-      .from(siteConfig)
-      .where(eq(siteConfig.isActive, true))
-      .orderBy(siteConfig.section, siteConfig.key);
+    const { data, error } = await supabase
+      .from('site_config')
+      .select('*')
+      .eq('is_active', true)
+      .order('section', { ascending: true })
+      .order('key', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getSiteConfigsBySection(section: string): Promise<SiteConfig[]> {
-    return await db
-      .select()
-      .from(siteConfig)
-      .where(and(eq(siteConfig.section, section), eq(siteConfig.isActive, true)))
-      .orderBy(siteConfig.key);
+    const { data, error } = await supabase
+      .from('site_config')
+      .select('*')
+      .eq('section', section)
+      .eq('is_active', true)
+      .order('key', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getSiteConfig(id: string): Promise<SiteConfig | undefined> {
-    const [config] = await db.select().from(siteConfig).where(eq(siteConfig.id, id));
-    return config || undefined;
+    const { data, error } = await supabase
+      .from('site_config')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createSiteConfig(insertConfig: InsertSiteConfig): Promise<SiteConfig> {
-    const [config] = await db
-      .insert(siteConfig)
-      .values(insertConfig)
-      .returning();
-    return config;
+    const { data, error } = await supabase
+      .from('site_config')
+      .insert(insertConfig)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateSiteConfig(id: string, updateData: Partial<InsertSiteConfig>): Promise<SiteConfig> {
-    const [config] = await db
-      .update(siteConfig)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(siteConfig.id, id))
-      .returning();
-    return config;
+    const { data, error } = await supabase
+      .from('site_config')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteSiteConfig(id: string): Promise<void> {
-    await db.delete(siteConfig).where(eq(siteConfig.id, id));
+    const { error } = await supabase
+      .from('site_config')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Page content management
+  // ==================== PAGE CONTENT ====================
+  
   async getPageContents(): Promise<PageContent[]> {
-    return await db
-      .select()
-      .from(pageContent)
-      .where(eq(pageContent.isVisible, true))
-      .orderBy(pageContent.page, pageContent.section, pageContent.sortOrder);
+    const { data, error } = await supabase
+      .from('page_content')
+      .select('*')
+      .eq('is_visible', true)
+      .order('page', { ascending: true })
+      .order('section', { ascending: true })
+      .order('sort_order', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getPageContentsByPage(page: string): Promise<PageContent[]> {
-    return await db
-      .select()
-      .from(pageContent)
-      .where(and(eq(pageContent.page, page), eq(pageContent.isVisible, true)))
-      .orderBy(pageContent.section, pageContent.sortOrder);
+    const { data, error } = await supabase
+      .from('page_content')
+      .select('*')
+      .eq('page', page)
+      .eq('is_visible', true)
+      .order('section', { ascending: true })
+      .order('sort_order', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getPageContent(id: string): Promise<PageContent | undefined> {
-    const [content] = await db.select().from(pageContent).where(eq(pageContent.id, id));
-    return content || undefined;
+    const { data, error } = await supabase
+      .from('page_content')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createPageContent(insertContent: InsertPageContent): Promise<PageContent> {
-    const [content] = await db
-      .insert(pageContent)
-      .values(insertContent)
-      .returning();
-    return content;
+    const { data, error } = await supabase
+      .from('page_content')
+      .insert(insertContent)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updatePageContent(id: string, updateData: Partial<InsertPageContent>): Promise<PageContent> {
-    const [content] = await db
-      .update(pageContent)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(pageContent.id, id))
-      .returning();
-    return content;
+    const { data, error } = await supabase
+      .from('page_content')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deletePageContent(id: string): Promise<void> {
-    await db.delete(pageContent).where(eq(pageContent.id, id));
+    const { error } = await supabase
+      .from('page_content')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
-  // Theme configuration management
+  // ==================== THEME CONFIGURATION ====================
+  
   async getThemeConfigs(): Promise<ThemeConfig[]> {
-    return await db
-      .select()
-      .from(themeConfig)
-      .orderBy(desc(themeConfig.isDefault), desc(themeConfig.createdAt));
+    const { data, error } = await supabase
+      .from('theme_config')
+      .select('*')
+      .order('is_default', { ascending: false })
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
   }
 
   async getActiveTheme(): Promise<ThemeConfig | undefined> {
-    const [theme] = await db.select().from(themeConfig).where(eq(themeConfig.isActive, true));
-    return theme || undefined;
+    const { data, error } = await supabase
+      .from('theme_config')
+      .select('*')
+      .eq('is_active', true)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async getThemeConfig(id: string): Promise<ThemeConfig | undefined> {
-    const [theme] = await db.select().from(themeConfig).where(eq(themeConfig.id, id));
-    return theme || undefined;
+    const { data, error } = await supabase
+      .from('theme_config')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async createThemeConfig(insertTheme: InsertThemeConfig): Promise<ThemeConfig> {
-    const [theme] = await db
-      .insert(themeConfig)
-      .values(insertTheme)
-      .returning();
-    return theme;
+    const { data, error } = await supabase
+      .from('theme_config')
+      .insert(insertTheme)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async updateThemeConfig(id: string, updateData: Partial<InsertThemeConfig>): Promise<ThemeConfig> {
-    const [theme] = await db
-      .update(themeConfig)
-      .set({ ...updateData, updatedAt: new Date() })
-      .where(eq(themeConfig.id, id))
-      .returning();
-    return theme;
+    const { data, error } = await supabase
+      .from('theme_config')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 
   async deleteThemeConfig(id: string): Promise<void> {
-    await db.delete(themeConfig).where(eq(themeConfig.id, id));
+    const { error } = await supabase
+      .from('theme_config')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
   }
 
   async setActiveTheme(id: string): Promise<ThemeConfig> {
     // First, deactivate all themes
-    await db.update(themeConfig).set({ isActive: false });
+    await supabase
+      .from('theme_config')
+      .update({ is_active: false })
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     
     // Then activate the selected theme
-    const [theme] = await db
-      .update(themeConfig)
-      .set({ isActive: true, updatedAt: new Date() })
-      .where(eq(themeConfig.id, id))
-      .returning();
-    return theme;
+    const { data, error } = await supabase
+      .from('theme_config')
+      .update({ is_active: true, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
   }
 }
 
