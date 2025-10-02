@@ -2,15 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.ts",
+      "src": "api/handler.ts",
       "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/public"
-      }
     }
   ],
   "routes": [
@@ -19,8 +12,12 @@
       "dest": "/api/handler.ts"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/dist/public/assets/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/dist/public/$1"
+      "dest": "/dist/public/index.html"
     }
   ]
 }
