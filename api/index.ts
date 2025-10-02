@@ -116,7 +116,7 @@ app.use((req, res, next) => {
 
   // Setup frontend serving
   if (process.env.NODE_ENV === 'development') {
-    const { setupVite, serveStatic } = await import('./vite');
+    const { setupVite, serveStatic } = await import('./vite.js');
     // Note: In development, Vite middleware will be added by setupVite
     console.log('Vite development middleware will be set up by the dev server');
   } else {
