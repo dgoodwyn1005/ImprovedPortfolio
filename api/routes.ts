@@ -17,7 +17,7 @@ import {
   insertSiteConfigSchema,
   insertPageContentSchema,
   insertThemeConfigSchema
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { z } from "zod";
 import { verifySupabaseToken } from './supabase.js';
 
