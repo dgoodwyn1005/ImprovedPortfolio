@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type PortfolioProject, type InsertPortfolioProject, type FeaturedProject, type InsertFeaturedProject, type SiteSettings, type InsertSiteSettings, type AdminCredentials, type InsertAdminCredentials, type Testimonial, type InsertTestimonial, type PianoSample, type InsertPianoSample, type LivePerformance, type InsertLivePerformance, type Service, type InsertService, type Lead, type InsertLead, type Order, type InsertOrder, type Media, type InsertMedia, type SiteConfig, type InsertSiteConfig, type PageContent, type InsertPageContent, type ThemeConfig, type InsertThemeConfig } from "@shared/schema";
+import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type PortfolioProject, type InsertPortfolioProject, type FeaturedProject, type InsertFeaturedProject, type SiteSettings, type InsertSiteSettings, type AdminCredentials, type InsertAdminCredentials, type Testimonial, type InsertTestimonial, type PianoSample, type InsertPianoSample, type LivePerformance, type InsertLivePerformance, type Service, type InsertService, type Lead, type InsertLead, type Order, type InsertOrder, type Media, type InsertMedia, type SiteConfig, type InsertSiteConfig, type PageContent, type InsertPageContent, type ThemeConfig, type InsertThemeConfig } from "../shared/schema.js";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -101,8 +101,8 @@ export interface IStorage {
   setActiveTheme(id: string): Promise<ThemeConfig>;
 }
 
-import { db } from "./db";
-import { users, contactMessages, portfolioProjects, featuredProjects, siteSettings, adminCredentials, testimonials, pianoSamples, livePerformances, services, leads, orders, media, siteConfig, pageContent, themeConfig } from "@shared/schema";
+import { db } from "./db.js";
+import { users, contactMessages, portfolioProjects, featuredProjects, siteSettings, adminCredentials, testimonials, pianoSamples, livePerformances, services, leads, orders, media, siteConfig, pageContent, themeConfig } from "../shared/schema.js";
 import { eq, desc, and } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
