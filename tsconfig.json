@@ -12,7 +12,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler",
+    "outDir": "dist",
+    "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
