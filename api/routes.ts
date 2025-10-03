@@ -177,14 +177,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/admin/featured", async (req, res) => {
     try {
+      console.log("=== Featured Project Request ===");
+      console.log("Body:", JSON.stringify(req.body, null, 2));
+      
       const validatedData = insertFeaturedProjectSchema.parse(req.body);
+      console.log("Validation passed");
+      
       const project = await storage.createFeaturedProject(validatedData);
+      console.log("Created successfully:", project.id);
+      
       res.json(project);
     } catch (error) {
+      console.error("=== Featured Project Error ===");
+      console.error(error);
+      
       if (error instanceof z.ZodError) {
-        res.status(400).json({ error: error.errors });
+        return res.status(400).json({ error: error.errors });
       } else {
-        res.status(500).json({ error: "Failed to create featured project" });
+        return res.status(500).json({ 
+          error: "Failed to create featured project",
+          details: error instanceof Error ? error.message : String(error)
+        });
       }
     }
   });
