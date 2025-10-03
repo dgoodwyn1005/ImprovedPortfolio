@@ -132,7 +132,7 @@ export class DatabaseStorage implements IStorage {
       .single();
     
     if (error) {
-      if (error.code === 'PGRST116') return undefined; // Not found
+      if (error.code === 'PGRST116') return undefined;
       throw error;
     }
     return data;
@@ -196,30 +196,99 @@ export class DatabaseStorage implements IStorage {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.id,
+      title: d.title,
+      description: d.description,
+      image: d.image_url || d.image,
+      technologies: d.technologies || [],
+      year: d.year,
+      featured: d.featured || false,
+      clientResults: d.client_results,
+      websiteUrl: d.website_url || d.project_url,
+      order: d.order,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   async createPortfolioProject(project: InsertPortfolioProject): Promise<PortfolioProject> {
+    const dbProject = {
+      title: project.title,
+      description: project.description,
+      image_url: project.image,
+      technologies: project.technologies,
+      year: project.year,
+      featured: project.featured || false,
+      client_results: project.clientResults || null,
+      website_url: project.websiteUrl || null,
+      order: typeof project.order === 'string' ? parseInt(project.order) || 0 : project.order || 0,
+    };
+    
     const { data, error } = await supabase
       .from('portfolio_projects')
-      .insert(project)
+      .insert(dbProject)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      image: data.image_url,
+      technologies: data.technologies || [],
+      year: data.year,
+      featured: data.featured || false,
+      clientResults: data.client_results,
+      websiteUrl: data.website_url,
+      order: data.order,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async updatePortfolioProject(id: string, project: Partial<InsertPortfolioProject>): Promise<PortfolioProject> {
+    const dbProject: any = {
+      updated_at: new Date().toISOString()
+    };
+    
+    if (project.title !== undefined) dbProject.title = project.title;
+    if (project.description !== undefined) dbProject.description = project.description;
+    if (project.image !== undefined) dbProject.image_url = project.image;
+    if (project.technologies !== undefined) dbProject.technologies = project.technologies;
+    if (project.year !== undefined) dbProject.year = project.year;
+    if (project.featured !== undefined) dbProject.featured = project.featured;
+    if (project.clientResults !== undefined) dbProject.client_results = project.clientResults;
+    if (project.websiteUrl !== undefined) dbProject.website_url = project.websiteUrl;
+    if (project.order !== undefined) {
+      dbProject.order = typeof project.order === 'string' ? parseInt(project.order) || 0 : project.order || 0;
+    }
+    
     const { data, error } = await supabase
       .from('portfolio_projects')
-      .update({ ...project, updated_at: new Date().toISOString() })
+      .update(dbProject)
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      image: data.image_url,
+      technologies: data.technologies || [],
+      year: data.year,
+      featured: data.featured || false,
+      clientResults: data.client_results,
+      websiteUrl: data.website_url,
+      order: data.order,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async deletePortfolioProject(id: string): Promise<void> {
@@ -241,30 +310,109 @@ export class DatabaseStorage implements IStorage {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.id,
+      title: d.title,
+      description: d.description,
+      image: d.image_url,
+      icon: d.icon,
+      iconColor: d.icon_color,
+      features: d.features || [],
+      technologies: d.technologies || [],
+      githubUrl: d.github_url,
+      liveUrl: d.live_url || d.link,
+      demoType: d.demo_type,
+      order: d.order,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   async createFeaturedProject(project: InsertFeaturedProject): Promise<FeaturedProject> {
+    const dbProject = {
+      title: project.title,
+      description: project.description,
+      image_url: project.image,
+      icon: project.icon,
+      icon_color: project.iconColor,
+      features: project.features,
+      technologies: project.technologies,
+      github_url: project.githubUrl || null,
+      live_url: project.liveUrl || null,
+      demo_type: project.demoType || null,
+      order: typeof project.order === 'string' ? parseInt(project.order) || 0 : project.order || 0,
+    };
+    
     const { data, error } = await supabase
       .from('featured_projects')
-      .insert(project)
+      .insert(dbProject)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      image: data.image_url,
+      icon: data.icon,
+      iconColor: data.icon_color,
+      features: data.features || [],
+      technologies: data.technologies || [],
+      githubUrl: data.github_url,
+      liveUrl: data.live_url,
+      demoType: data.demo_type,
+      order: data.order,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async updateFeaturedProject(id: string, project: Partial<InsertFeaturedProject>): Promise<FeaturedProject> {
+    const dbProject: any = {
+      updated_at: new Date().toISOString()
+    };
+    
+    if (project.title !== undefined) dbProject.title = project.title;
+    if (project.description !== undefined) dbProject.description = project.description;
+    if (project.image !== undefined) dbProject.image_url = project.image;
+    if (project.icon !== undefined) dbProject.icon = project.icon;
+    if (project.iconColor !== undefined) dbProject.icon_color = project.iconColor;
+    if (project.features !== undefined) dbProject.features = project.features;
+    if (project.technologies !== undefined) dbProject.technologies = project.technologies;
+    if (project.githubUrl !== undefined) dbProject.github_url = project.githubUrl;
+    if (project.liveUrl !== undefined) dbProject.live_url = project.liveUrl;
+    if (project.demoType !== undefined) dbProject.demo_type = project.demoType;
+    if (project.order !== undefined) {
+      dbProject.order = typeof project.order === 'string' ? parseInt(project.order) || 0 : project.order || 0;
+    }
+    
     const { data, error } = await supabase
       .from('featured_projects')
-      .update({ ...project, updated_at: new Date().toISOString() })
+      .update(dbProject)
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      image: data.image_url,
+      icon: data.icon,
+      iconColor: data.icon_color,
+      features: data.features || [],
+      technologies: data.technologies || [],
+      githubUrl: data.github_url,
+      liveUrl: data.live_url,
+      demoType: data.demo_type,
+      order: data.order,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async deleteFeaturedProject(id: string): Promise<void> {
@@ -288,7 +436,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSiteSettings(key: string, value: any): Promise<SiteSettings> {
-    // Try to update first
     const { data: existing } = await supabase
       .from('site_settings')
       .select('*')
@@ -334,7 +481,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAdminCredentials(credentials: InsertAdminCredentials): Promise<AdminCredentials> {
-    // Delete existing credentials first
     await supabase.from('admin_credentials').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     
     const { data, error } = await supabase
@@ -358,30 +504,94 @@ export class DatabaseStorage implements IStorage {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.id,
+      name: d.name || d.client_name,
+      role: d.role,
+      company: d.company || d.client_company,
+      content: d.content,
+      rating: String(d.rating),
+      image: d.image || d.avatar_url,
+      order: d.order,
+      isActive: d.is_active,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
+    const dbTestimonial = {
+      name: insertTestimonial.name,
+      role: insertTestimonial.role,
+      company: insertTestimonial.company,
+      content: insertTestimonial.content,
+      rating: parseInt(insertTestimonial.rating || '5') || 5,  // Add || '5' here
+      image: insertTestimonial.image || null,
+      is_active: insertTestimonial.isActive !== false,
+      order: typeof insertTestimonial.order === 'string' ? parseInt(insertTestimonial.order) || 0 : insertTestimonial.order || 0,
+    };
+    
     const { data, error } = await supabase
       .from('testimonials')
-      .insert(insertTestimonial)
+      .insert(dbTestimonial)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      name: data.name,
+      role: data.role,
+      company: data.company,
+      content: data.content,
+      rating: String(data.rating),
+      image: data.image,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async updateTestimonial(id: string, updateData: Partial<InsertTestimonial>): Promise<Testimonial> {
+    const dbUpdate: any = {
+      updated_at: new Date().toISOString()
+    };
+    
+    if (updateData.name !== undefined) dbUpdate.name = updateData.name;
+    if (updateData.role !== undefined) dbUpdate.role = updateData.role;
+    if (updateData.company !== undefined) dbUpdate.company = updateData.company;
+    if (updateData.content !== undefined) dbUpdate.content = updateData.content;
+    if (updateData.rating !== undefined) dbUpdate.rating = parseInt(updateData.rating || '5') || 5;
+    if (updateData.image !== undefined) dbUpdate.image = updateData.image;
+    if (updateData.isActive !== undefined) dbUpdate.is_active = updateData.isActive;
+    if (updateData.order !== undefined) {
+      dbUpdate.order = typeof updateData.order === 'string' ? parseInt(updateData.order) || 0 : updateData.order || 0;
+    }
+    
     const { data, error } = await supabase
       .from('testimonials')
-      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .update(dbUpdate)
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      name: data.name,
+      role: data.role,
+      company: data.company,
+      content: data.content,
+      rating: String(data.rating),
+      image: data.image,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async deleteTestimonial(id: string): Promise<void> {
@@ -404,30 +614,96 @@ export class DatabaseStorage implements IStorage {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.id,
+      title: d.title,
+      description: d.description,
+      audioUrl: d.audio_url,
+      duration: d.duration ? String(d.duration) : null,
+      category: d.category || d.genre,
+      isOriginal: d.is_original || false,
+      order: d.order,
+      isActive: d.is_active,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   async createPianoSample(insertSample: InsertPianoSample): Promise<PianoSample> {
+    const dbSample = {
+      title: insertSample.title,
+      description: insertSample.description,
+      audio_url: insertSample.audioUrl,
+      duration: insertSample.duration ? parseInt(insertSample.duration) || null : null,
+      category: insertSample.category,
+      is_original: insertSample.isOriginal || false,
+      is_active: insertSample.isActive !== false,
+      order: typeof insertSample.order === 'string' ? parseInt(insertSample.order) || 0 : insertSample.order || 0,
+    };
+    
     const { data, error } = await supabase
       .from('piano_samples')
-      .insert(insertSample)
+      .insert(dbSample)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      audioUrl: data.audio_url,
+      duration: data.duration ? String(data.duration) : null,
+      category: data.category,
+      isOriginal: data.is_original,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async updatePianoSample(id: string, updateData: Partial<InsertPianoSample>): Promise<PianoSample> {
+    const dbUpdate: any = {
+      updated_at: new Date().toISOString()
+    };
+    
+    if (updateData.title !== undefined) dbUpdate.title = updateData.title;
+    if (updateData.description !== undefined) dbUpdate.description = updateData.description;
+    if (updateData.audioUrl !== undefined) dbUpdate.audio_url = updateData.audioUrl;
+    if (updateData.duration !== undefined) {
+      dbUpdate.duration = updateData.duration ? parseInt(updateData.duration) || null : null;
+    }
+    if (updateData.category !== undefined) dbUpdate.category = updateData.category;
+    if (updateData.isOriginal !== undefined) dbUpdate.is_original = updateData.isOriginal;
+    if (updateData.isActive !== undefined) dbUpdate.is_active = updateData.isActive;
+    if (updateData.order !== undefined) {
+      dbUpdate.order = typeof updateData.order === 'string' ? parseInt(updateData.order) || 0 : updateData.order || 0;
+    }
+    
     const { data, error } = await supabase
       .from('piano_samples')
-      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .update(dbUpdate)
       .eq('id', id)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      audioUrl: data.audio_url,
+      duration: data.duration ? String(data.duration) : null,
+      category: data.category,
+      isOriginal: data.is_original,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async deletePianoSample(id: string): Promise<void> {
@@ -450,30 +726,91 @@ export class DatabaseStorage implements IStorage {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(d => ({
+      id: d.id,
+      title: d.title,
+      description: d.description,
+      videoUrl: d.video_url,
+      venue: d.venue,
+      performanceDate: d.performance_date ? new Date(d.performance_date).toISOString().split('T')[0] : null,
+      order: d.order,
+      isActive: d.is_active,
+      createdAt: d.created_at,
+      updatedAt: d.updated_at,
+    }));
   }
 
   async createLivePerformance(insertPerformance: InsertLivePerformance): Promise<LivePerformance> {
+    const dbPerformance = {
+      title: insertPerformance.title,
+      description: insertPerformance.description,
+      video_url: insertPerformance.videoUrl,
+      venue: insertPerformance.venue,
+      performance_date: insertPerformance.performanceDate ? new Date(insertPerformance.performanceDate).toISOString() : null,
+      is_active: insertPerformance.isActive !== false,
+      order: typeof insertPerformance.order === 'string' ? parseInt(insertPerformance.order) || 0 : insertPerformance.order || 0,
+    };
+    
     const { data, error } = await supabase
       .from('live_performances')
-      .insert(insertPerformance)
+      .insert(dbPerformance)
       .select()
       .single();
     
     if (error) throw error;
-    return data;
+    
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      videoUrl: data.video_url,
+      venue: data.venue,
+      performanceDate: data.performance_date ? new Date(data.performance_date).toISOString().split('T')[0] : null,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async updateLivePerformance(id: string, updateData: Partial<InsertLivePerformance>): Promise<LivePerformance> {
+    const dbUpdate: any = {
+      updated_at: new Date().toISOString()
+    };
+    
+    if (updateData.title !== undefined) dbUpdate.title = updateData.title;
+    if (updateData.description !== undefined) dbUpdate.description = updateData.description;
+    if (updateData.videoUrl !== undefined) dbUpdate.video_url = updateData.videoUrl;
+    if (updateData.venue !== undefined) dbUpdate.venue = updateData.venue;
+    if (updateData.performanceDate !== undefined) {
+      dbUpdate.performance_date = updateData.performanceDate ? new Date(updateData.performanceDate).toISOString() : null;
+    }
+    if (updateData.isActive !== undefined) dbUpdate.is_active = updateData.isActive;
+    if (updateData.order !== undefined) {
+      dbUpdate.order = typeof updateData.order === 'string' ? parseInt(updateData.order) || 0 : updateData.order || 0;
+    }
+    
     const { data, error } = await supabase
       .from('live_performances')
-      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .update(dbUpdate)
       .eq('id', id)
       .select()
       .single();
+
+      if (error) throw error;
     
-    if (error) throw error;
-    return data;
+    return {
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      videoUrl: data.video_url,
+      venue: data.venue,
+      performanceDate: data.performance_date ? new Date(data.performance_date).toISOString().split('T')[0] : null,
+      order: data.order,
+      isActive: data.is_active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
   async deleteLivePerformance(id: string): Promise<void> {
