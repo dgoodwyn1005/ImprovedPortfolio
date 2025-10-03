@@ -14,7 +14,7 @@ import AdSense from "@/components/AdSense";
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  service: z.string().optional(),
+  inquiry: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
@@ -28,7 +28,7 @@ export default function Contact() {
     defaultValues: {
       name: "",
       email: "",
-      service: "",
+      inquiry: "",
       message: "",
     },
   });
@@ -47,7 +47,7 @@ export default function Contact() {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
-          service: data.service,
+          inquiry: data.inquiry,
           message: data.message,
         }),
       });
@@ -77,8 +77,8 @@ export default function Contact() {
 
   const achievements = [
     "3+ Years Web Development",
-    "15+ Years Music Experience", 
-    "NCAA Athletic Background",
+    "Full-Stack Expertise",
+    "Modern UI/UX Design",
     "Computer Science Education",
   ];
 
@@ -88,9 +88,9 @@ export default function Contact() {
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Let's Work Together</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Let's Connect</h2>
             <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-              Ready to transform your business with cutting-edge web solutions and AI automation?
+              Interested in collaborating or learning more about my work? I'd love to hear from you.
             </p>
           </div>
 
@@ -140,22 +140,22 @@ export default function Contact() {
 
                   <FormField
                     control={form.control}
-                    name="service"
+                    name="inquiry"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white font-medium">Service Interest</FormLabel>
+                        <FormLabel className="text-white font-medium">Type of Inquiry</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/50">
-                              <SelectValue placeholder="Select a service..." />
+                              <SelectValue placeholder="What brings you here?" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="starter">Starter Package ($650)</SelectItem>
-                            <SelectItem value="growth">Growth Package ($1,200)</SelectItem>
-                            <SelectItem value="pro">Pro Package ($2,500+)</SelectItem>
-                            <SelectItem value="music">Piano Services</SelectItem>
-                            <SelectItem value="custom">Custom Project</SelectItem>
+                            <SelectItem value="collaboration">Collaboration Opportunity</SelectItem>
+                            <SelectItem value="portfolio">Portfolio Review</SelectItem>
+                            <SelectItem value="freelance">Freelance Project</SelectItem>
+                            <SelectItem value="networking">Networking</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage className="text-red-300" />
@@ -173,7 +173,7 @@ export default function Contact() {
                           <Textarea
                             {...field}
                             rows={5}
-                            placeholder="Tell me about your project..."
+                            placeholder="Tell me about your inquiry or what you'd like to discuss..."
                             className="bg-white/20 border border-white/30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:border-gold-400 focus:ring-2 focus:ring-gold-400/50 resize-none"
                           />
                         </FormControl>

@@ -6,19 +6,9 @@ import logoImage from "@assets/FreelanceProfileImage_1754945363617.png";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/computer", label: "Computer Science" },
-  { href: "/music", label: "Music" },
-  { href: "/basketball", label: "Basketball" },
-  { href: "/pricing", label: "Pricing" },
   { href: "/contact", label: "Contact" },
 ];
 
-// Keep funnel links for backwards compatibility
-const funnelLinks = [
-  { href: "/computer", label: "Computer & AI Services", cta: "Book Free Consult" },
-  { href: "/music", label: "Piano Services", cta: "Check Availability" },
-  { href: "/basketball", label: "Basketball Training", cta: "Schedule Training" },
-];
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -78,7 +68,7 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              {navLinks.slice(0, 5).map((link) => (
+              {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
@@ -88,18 +78,12 @@ export default function Navigation() {
                 </Link>
               ))}
               
-              {/* Service CTAs */}
-              <Link
-                to="/pricing"
-                className="bg-gold-400 text-gray-900 hover:bg-gold-500 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-              >
-                Pricing
-              </Link>
+              {/* Portfolio CTA */}
               <Link
                 to="/contact"
-                className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                className="bg-gold-400 text-gray-900 hover:bg-gold-500 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
               >
-                Contact
+                Get In Touch
               </Link>
             </div>
           </div>
