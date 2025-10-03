@@ -7,27 +7,7 @@ import { SupabaseSessionStore } from './supabase-session-store.js';
 
 const app = express();
 
-// Keep a copy of the raw body on the request for endpoints that need
-// to verify signatures (Stripe webhooks). We still parse JSON for normal routes.
-app.use((req, res, next) => {
-  let data = '';
-  req.on('data', (chunk) => {
-    data += chunk;
-  });
-  req.on('end', () => {
-    // Save raw body for webhook handlers; don't overwrite if already set
-    if (data && !('rawBody' in req)) {
-      // Some frameworks attach rawBody; follow that convention
-      (req as any).rawBody = data;
-    }
-    next();
-  });
-});
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-// CORS configuration for Vercel
+// CORS configuration - must come before body parsers
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -40,6 +20,12 @@ app.use((req, res, next) => {
   }
 });
 
+// Body parsing middleware
+// Note: If you need raw body for webhooks (e.g., Stripe), handle those routes 
+// separately BEFORE express.json() in routes.ts
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 // Session configuration with Supabase
 const sessionConfig: any = {
   secret: process.env.SESSION_SECRET || (() => {
@@ -51,7 +37,7 @@ const sessionConfig: any = {
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   }
@@ -113,9 +99,7 @@ app.use((req, res, next) => {
 
   // Setup frontend serving
   if (process.env.NODE_ENV === 'development') {
-    const { setupVite, serveStatic } = await import('./vite.js');
-    // Note: In development, Vite middleware will be added by setupVite
-    console.log('Vite development middleware will be set up by the dev server');
+    console.log('Development mode: Vite will handle static files');
   } else {
     // Serve static files in production (built React app)
     const staticPath = path.join(process.cwd(), 'dist', 'public');
@@ -132,6 +116,3 @@ app.use((req, res, next) => {
 
 // Export for Vercel serverless functions
 export default app;
-
-// Note: Server startup is now handled by server/index.ts in development
-// This ensures compatibility with existing npm scripts while supporting Vercel deployment

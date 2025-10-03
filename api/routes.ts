@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount Reusable API endpoints (Supabase + Stripe helpers)
   // Note: Contact form now uses Formspree integration
   // No backend contact routes needed
-
+  
   // Admin login endpoint
   app.post("/api/admin/login", authenticateAdminLogin, async (req: any, res) => {
     res.json({ success: true, user: req.user });
