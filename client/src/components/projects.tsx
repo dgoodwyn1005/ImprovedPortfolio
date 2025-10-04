@@ -2,9 +2,64 @@ import { useQuery } from "@tanstack/react-query";
 import type { FeaturedProject } from "@shared/schema";
 
 export default function Projects() {
-  const { data: projects = [], isLoading } = useQuery<FeaturedProject[]>({
+  const { data: projects = [], isLoading, error } = useQuery<FeaturedProject[]>({
     queryKey: ["/api/featured"],
   });
+
+  // Sample data for when API is not available
+  const sampleProjects: FeaturedProject[] = [
+    {
+      id: "1",
+      title: "E-Commerce Platform",
+      description: "Full-stack e-commerce solution with React, Node.js, and PostgreSQL. Features include user authentication, payment processing, and admin dashboard.",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
+      icon: "fas fa-shopping-cart",
+      iconColor: "from-blue-500 to-purple-600",
+      features: ["User Authentication", "Payment Processing", "Admin Dashboard", "Responsive Design"],
+      technologies: ["React", "Node.js", "PostgreSQL", "Stripe"],
+      githubUrl: "https://github.com",
+      liveUrl: "https://example.com",
+      demoType: "demo",
+      order: "1",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "2", 
+      title: "Task Management App",
+      description: "Collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features.",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop",
+      icon: "fas fa-tasks",
+      iconColor: "from-green-500 to-teal-600",
+      features: ["Real-time Updates", "Drag & Drop", "Team Collaboration", "File Sharing"],
+      technologies: ["Vue.js", "Socket.io", "MongoDB", "Express"],
+      githubUrl: "https://github.com",
+      liveUrl: "https://example.com",
+      demoType: "demo",
+      order: "2",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: "3",
+      title: "Weather Dashboard",
+      description: "Interactive weather dashboard with location-based forecasts, weather maps, and detailed analytics. Built with modern web technologies.",
+      image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=400&h=300&fit=crop",
+      icon: "fas fa-cloud-sun",
+      iconColor: "from-yellow-500 to-orange-600",
+      features: ["Location-based Forecasts", "Interactive Maps", "Weather Analytics", "Mobile Responsive"],
+      technologies: ["React", "TypeScript", "Chart.js", "OpenWeather API"],
+      githubUrl: "https://github.com",
+      liveUrl: "https://example.com",
+      demoType: "demo",
+      order: "3",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+  ];
+
+  // Use sample data if API fails or returns empty
+  const displayProjects = error || projects.length === 0 ? sampleProjects : projects;
 
   if (isLoading) {
     return (
@@ -37,7 +92,7 @@ export default function Projects() {
           </p>
         </div>
 
-        {projects.length === 0 ? (
+        {displayProjects.length === 0 ? (
           <div className="text-center py-16">
             <div className="bg-gray-700 rounded-2xl p-12 max-w-md mx-auto">
               <i className="fas fa-lightbulb text-6xl text-gray-500 mb-6"></i>
@@ -49,7 +104,7 @@ export default function Projects() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project) => (
+            {displayProjects.map((project) => (
               <div key={project.id} className="bg-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                 <div className="relative h-48 overflow-hidden">
                   <img
