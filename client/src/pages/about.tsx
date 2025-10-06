@@ -1,6 +1,5 @@
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
-import AdSense from "@/components/AdSense";
 import { useEffect } from "react";
 
 export default function About() {
@@ -116,10 +115,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* Ad Section */}
-      <div className="py-6 flex justify-center bg-gray-900 overflow-x-auto">
-        <AdSense format="leaderboard" slot="4444444444" responsive={false} />
-      </div>
 
       <Footer />
     </div>

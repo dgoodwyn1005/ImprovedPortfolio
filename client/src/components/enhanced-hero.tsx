@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import { useEditableContent } from "@/hooks/use-editable-content";
 
 export default function EnhancedHero() {
   const [typedText, setTypedText] = useState("");
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Get editable content
+  const { content, isLoading } = useEditableContent("home", "hero");
   
   const phrases = [
     "Web Developer",
@@ -83,59 +87,73 @@ export default function EnhancedHero() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Enhanced Hero Content */}
           <div className="mb-6">
-            <p className="text-gold-400 font-semibold text-lg mb-2 animate-slide-up">
-              👋 Hello, I'm Deshawn Goodwyn
-            </p>
+            {content.greeting?.isVisible !== false && (
+              <p className="text-gold-400 font-semibold text-lg mb-2 animate-slide-up">
+                {content.greeting?.title || "👋 Hello, I'm Deshawn Goodwyn"}
+              </p>
+            )}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
               <span className="gradient-text">
                 {typedText}
                 <span className="animate-pulse">|</span>
               </span>
             </h1>
-            <h2 className="text-2xl sm:text-3xl text-blue-100 mb-6">
-              Web, AI, and Music — Crafted with Precision
-            </h2>
+            {content.main_title?.isVisible !== false && (
+              <h2 className="text-2xl sm:text-3xl text-blue-100 mb-6">
+                {content.main_title?.title || "Web, AI, and Music — Crafted with Precision"}
+              </h2>
+            )}
           </div>
 
-          <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed animate-slide-up">
-            Helping businesses and musicians succeed with custom websites, AI automation, and exceptional music services.
-          </p>
+          {content.description?.isVisible !== false && (
+            <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed animate-slide-up">
+              {content.description?.description || "Helping businesses and musicians succeed with custom websites, AI automation, and exceptional music services."}
+            </p>
+          )}
 
           {/* Enhanced CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <a
-              href="/ai"
-              className="group inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 animate-glow hover-lift"
-            >
-              <i className="fas fa-robot mr-2 group-hover:animate-bounce-subtle"></i>
-              AI & Web Services
-              <i className="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
-            </a>
-            <a
-              href="/music"
-              className="group inline-flex items-center px-8 py-4 bg-purple-600 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 animate-glow hover-lift"
-            >
-              <i className="fas fa-music mr-2 group-hover:animate-bounce-subtle"></i>
-              Piano Services
-              <i className="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
-            </a>
+            {content.ai_button?.isVisible !== false && (
+              <a
+                href={content.ai_button?.buttonLink || "/ai"}
+                className="group inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 animate-glow hover-lift"
+              >
+                <i className="fas fa-robot mr-2 group-hover:animate-bounce-subtle"></i>
+                {content.ai_button?.buttonText || "AI & Web Services"}
+                <i className="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+              </a>
+            )}
+            {content.music_button?.isVisible !== false && (
+              <a
+                href={content.music_button?.buttonLink || "/music"}
+                className="group inline-flex items-center px-8 py-4 bg-purple-600 text-white font-semibold rounded-lg shadow-lg hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 animate-glow hover-lift"
+              >
+                <i className="fas fa-music mr-2 group-hover:animate-bounce-subtle"></i>
+                {content.music_button?.buttonText || "Piano Services"}
+                <i className="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+              </a>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <button
-              onClick={scrollToContact}
-              className="group inline-flex items-center px-6 py-3 glass text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 hover-lift"
-            >
-              <i className="fas fa-envelope mr-2"></i>
-              Contact Me
-            </button>
-            <button
-              onClick={scrollToPortfolio}
-              className="group inline-flex items-center px-6 py-3 glass text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 hover-lift"
-            >
-              <i className="fas fa-eye mr-2"></i>
-              View Portfolio
-            </button>
+            {content.contact_button?.isVisible !== false && (
+              <button
+                onClick={scrollToContact}
+                className="group inline-flex items-center px-6 py-3 glass text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 hover-lift"
+              >
+                <i className="fas fa-envelope mr-2"></i>
+                {content.contact_button?.buttonText || "Contact Me"}
+              </button>
+            )}
+            {content.portfolio_button?.isVisible !== false && (
+              <button
+                onClick={scrollToPortfolio}
+                className="group inline-flex items-center px-6 py-3 glass text-white font-semibold rounded-lg hover:bg-white/10 transition-all duration-300 hover-lift"
+              >
+                <i className="fas fa-eye mr-2"></i>
+                {content.portfolio_button?.buttonText || "View Portfolio"}
+              </button>
+            )}
           </div>
 
           {/* Simplified Trust Indicators - Removed detailed stats */}

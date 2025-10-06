@@ -1,10 +1,14 @@
+import { useEditableContent } from "@/hooks/use-editable-content";
+
 export default function HowItWorks() {
+  // Get editable content
+  const { content, isLoading } = useEditableContent("home", "how_it_works");
   const platforms = [
     {
       icon: "fas fa-globe",
-      title: "Website",
-      platform: "(Hostinger)",
-      description: "Modern, mobile-ready, SEO-optimized site for your business. Fast, secure, and designed to convert visitors into customers.",
+      title: content.website_platform?.title || "Website",
+      platform: content.website_platform?.subtitle || "(Hostinger)",
+      description: content.website_platform?.description || "Modern, mobile-ready, SEO-optimized site for your business. Fast, secure, and designed to convert visitors into customers.",
       features: [
         "Mobile Responsive Design",
         "SEO Optimization",
@@ -14,9 +18,9 @@ export default function HowItWorks() {
     },
     {
       icon: "fas fa-robot",
-      title: "AI Features",
-      platform: "(Replit)",
-      description: "Chatbots, automated replies, lead qualification, and blog generators. Smart AI tools that work 24/7 for your business.",
+      title: content.ai_platform?.title || "AI Features",
+      platform: content.ai_platform?.subtitle || "(Replit)",
+      description: content.ai_platform?.description || "Chatbots, automated replies, lead qualification, and blog generators. Smart AI tools that work 24/7 for your business.",
       features: [
         "Intelligent Chatbots",
         "Lead Qualification",
@@ -26,9 +30,9 @@ export default function HowItWorks() {
     },
     {
       icon: "fas fa-robot",
-      title: "Smart Automation",
-      platform: "(Zapier Integration)",
-      description: "Email/SMS automation, CRM syncing, and intelligent workflows. Connect your business tools and automate repetitive tasks seamlessly.",
+      title: content.automation_platform?.title || "Smart Automation",
+      platform: content.automation_platform?.subtitle || "(Zapier Integration)",
+      description: content.automation_platform?.description || "Email/SMS automation, CRM syncing, and intelligent workflows. Connect your business tools and automate repetitive tasks seamlessly.",
       features: [
         "Email & SMS Automation",
         "CRM Integration",
@@ -44,10 +48,16 @@ export default function HowItWorks() {
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-deep-blue-800 mb-4">How It Works</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Three powerful platforms working together to transform your business
-            </p>
+            {content.section_title?.isVisible !== false && (
+              <>
+                <h2 className="text-3xl sm:text-4xl font-bold text-deep-blue-800 mb-4">
+                  {content.section_title?.title || "How It Works"}
+                </h2>
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                  {content.section_title?.subtitle || "Three powerful platforms working together to transform your business"}
+                </p>
+              </>
+            )}
           </div>
 
           {/* How It Works Cards */}

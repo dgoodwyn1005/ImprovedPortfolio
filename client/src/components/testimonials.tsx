@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useEditableContent } from "@/hooks/use-editable-content";
 import type { Testimonial } from "@shared/schema";
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Get editable content
+  const { content: sectionContent } = useEditableContent("home", "testimonials");
 
   // Fetch testimonials from API
   const { data: testimonials = [], isLoading } = useQuery<Testimonial[]>({
@@ -71,12 +75,16 @@ export default function Testimonials() {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gold-400 mb-4">
-            What Clients Say
-          </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Real feedback from real people who've experienced the difference
-          </p>
+          {sectionContent.section_title?.isVisible !== false && (
+            <>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gold-400 mb-4">
+                {sectionContent.section_title?.title || "What Clients Say"}
+              </h2>
+              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                {sectionContent.section_title?.subtitle || "Real feedback from real people who've experienced the difference"}
+              </p>
+            </>
+          )}
         </div>
 
         <div className="max-w-4xl mx-auto">

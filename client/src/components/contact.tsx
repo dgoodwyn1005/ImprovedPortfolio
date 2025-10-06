@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { trackContactSubmit } from "@/lib/analytics";
-import AdSense from "@/components/AdSense";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -279,10 +278,6 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Sidebar Ad */}
-              <div className="flex justify-center">
-                <AdSense format="rectangle" slot="8888888888" />
-              </div>
 
               {/* Quick Stats */}
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">

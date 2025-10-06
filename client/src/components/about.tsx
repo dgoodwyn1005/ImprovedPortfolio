@@ -1,54 +1,80 @@
+import { useEditableContent } from "@/hooks/use-editable-content";
+
 export default function About() {
+  // Get editable content
+  const { content, isLoading } = useEditableContent("home", "about");
   return (
     <section id="about" className="py-20 bg-gray-800">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gold-400 mb-4">About Deshawn</h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Multi-domain expertise combining technology, athletics, and music
-            </p>
+            {content.section_title?.isVisible !== false && (
+              <>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gold-400 mb-4">
+                  {content.section_title?.title || "About Deshawn"}
+                </h2>
+                <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                  {content.section_title?.subtitle || "Multi-domain expertise combining technology, athletics, and music"}
+                </p>
+              </>
+            )}
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Bio Content */}
             <div className="space-y-6">
               <div className="prose prose-lg">
-                <p className="text-gray-300 leading-relaxed">
-                  With a unique blend of technical expertise and creative passion, I bring{" "}
-                  <strong className="text-gold-400">15+ years of piano experience</strong> and{" "}
-                  <strong className="text-gold-400">3+ years of programming</strong> to every project. My
-                  journey spans Computer Science studies at Virginia State University and a competitive NCAA
-                  Division I basketball background.
-                </p>
+                {content.bio_paragraph_1?.isVisible !== false && (
+                  <p className="text-gray-300 leading-relaxed">
+                    {content.bio_paragraph_1?.description || "With a unique blend of technical expertise and creative passion, I bring 15+ years of piano experience and 3+ years of programming to every project. My journey spans Computer Science studies at Virginia State University and a competitive NCAA Division I basketball background."}
+                  </p>
+                )}
 
-                <p className="text-gray-300 leading-relaxed">
-                  This diverse foundation has instilled unmatched work ethic, discipline, and the ability to
-                  excel across multiple domains—from building cutting-edge web applications to delivering
-                  exceptional musical performances.
-                </p>
+                {content.bio_paragraph_2?.isVisible !== false && (
+                  <p className="text-gray-300 leading-relaxed">
+                    {content.bio_paragraph_2?.description || "This diverse foundation has instilled unmatched work ethic, discipline, and the ability to excel across multiple domains—from building cutting-edge web applications to delivering exceptional musical performances."}
+                  </p>
+                )}
               </div>
 
               {/* Skills */}
               <div className="grid sm:grid-cols-3 gap-6 mt-8">
-                <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
-                  <i className="fas fa-code text-3xl text-blue-400 mb-3"></i>
-                  <h4 className="font-semibold text-white">Web Development</h4>
-                  <p className="text-sm text-gray-300 mt-2">3+ Years</p>
-                </div>
+                {content.web_development_skill?.isVisible !== false && (
+                  <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
+                    <i className="fas fa-code text-3xl text-blue-400 mb-3"></i>
+                    <h4 className="font-semibold text-white">
+                      {content.web_development_skill?.title || "Web Development"}
+                    </h4>
+                    <p className="text-sm text-gray-300 mt-2">
+                      {content.web_development_skill?.subtitle || "3+ Years"}
+                    </p>
+                  </div>
+                )}
 
-                <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
-                  <i className="fas fa-robot text-3xl text-gold-400 mb-3"></i>
-                  <h4 className="font-semibold text-white">AI Implementation</h4>
-                  <p className="text-sm text-gray-300 mt-2">Specialist</p>
-                </div>
+                {content.ai_skill?.isVisible !== false && (
+                  <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
+                    <i className="fas fa-robot text-3xl text-gold-400 mb-3"></i>
+                    <h4 className="font-semibold text-white">
+                      {content.ai_skill?.title || "AI Implementation"}
+                    </h4>
+                    <p className="text-sm text-gray-300 mt-2">
+                      {content.ai_skill?.subtitle || "Specialist"}
+                    </p>
+                  </div>
+                )}
 
-                <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
-                  <i className="fas fa-music text-3xl text-purple-400 mb-3"></i>
-                  <h4 className="font-semibold text-white">Piano Performance</h4>
-                  <p className="text-sm text-gray-300 mt-2">15+ Years</p>
-                </div>
+                {content.piano_skill?.isVisible !== false && (
+                  <div className="text-center p-6 bg-gradient-to-br from-gray-700 to-gray-600 rounded-xl">
+                    <i className="fas fa-music text-3xl text-purple-400 mb-3"></i>
+                    <h4 className="font-semibold text-white">
+                      {content.piano_skill?.title || "Piano Performance"}
+                    </h4>
+                    <p className="text-sm text-gray-300 mt-2">
+                      {content.piano_skill?.subtitle || "15+ Years"}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

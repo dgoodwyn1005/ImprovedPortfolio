@@ -270,6 +270,24 @@ export default function SiteCustomization() {
             {previewMode ? "Exit Preview" : "Preview Mode"}
           </Button>
 
+          {/* Seed Content Button */}
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                await apiRequest("/api/admin/seed-content", "POST");
+                toast({ title: "Content seeded successfully!" });
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/page-content"] });
+              } catch (error) {
+                toast({ title: "Failed to seed content", variant: "destructive" });
+              }
+            }}
+            data-testid="seed-content"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Seed Content
+          </Button>
+
           {/* Refresh Button */}
           <Button
             variant="outline"
@@ -320,6 +338,7 @@ export default function SiteCustomization() {
                   <SelectContent>
                     <SelectItem value="home">Home Page</SelectItem>
                     <SelectItem value="about">About Page</SelectItem>
+                    <SelectItem value="global">Global (Navigation, Footer)</SelectItem>
                     <SelectItem value="ai">AI Services</SelectItem>
                     <SelectItem value="music">Music Services</SelectItem>
                     <SelectItem value="basketball">Basketball Services</SelectItem>

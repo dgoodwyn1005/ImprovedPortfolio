@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "wouter";
+import { useEditableContent } from "@/hooks/use-editable-content";
 import logoImage from "@assets/FreelanceProfileImage_1754945363617.png";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
 
 
 export default function Navigation() {
@@ -15,6 +10,17 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const isMobile = useIsMobile();
+  
+  // Get editable content
+  const { content, isLoading } = useEditableContent("global", "navigation");
+  
+  // Create nav links from editable content
+  const navLinks = [
+    { href: content.home_link?.buttonLink || "/", label: content.home_link?.title || "Home" },
+    { href: content.about_link?.buttonLink || "/about", label: content.about_link?.title || "About" },
+    { href: content.portfolio_link?.buttonLink || "#portfolio", label: content.portfolio_link?.title || "Portfolio" },
+    { href: content.contact_link?.buttonLink || "/contact", label: content.contact_link?.title || "Contact" },
+  ].filter(link => link.label); // Filter out any empty labels
 
   useEffect(() => {
     const handleScroll = () => {

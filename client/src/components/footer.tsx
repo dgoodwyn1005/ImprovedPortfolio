@@ -1,4 +1,8 @@
+import { useEditableContent } from "@/hooks/use-editable-content";
+
 export default function Footer() {
+  // Get editable content
+  const { content, isLoading } = useEditableContent("global", "footer");
   const quickLinks = [
     { href: "#about", label: "About" },
     { href: "#services", label: "Services" },
@@ -35,8 +39,7 @@ export default function Footer() {
             <div className="md:col-span-2">
               <h3 className="text-2xl font-bold text-white mb-4">Deshawn Goodwyn</h3>
               <p className="text-gray-400 mb-4 leading-relaxed">
-                Freelance Web Developer, AI Implementation Specialist, and Professional Pianist. Crafting
-                digital solutions with the same precision and passion as musical performances.
+                {content.tagline?.title || "Freelance Web Developer, AI Implementation Specialist, and Professional Pianist. Crafting digital solutions with the same precision and passion as musical performances."}
               </p>
               <div className="flex space-x-4">
                 <a
@@ -90,7 +93,9 @@ export default function Footer() {
 
           {/* Bottom Footer */}
           <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">© 2025 Deshawn Goodwyn. All rights reserved.</p>
+            <p className="text-gray-400 text-sm">
+              {content.copyright?.title || "© 2025 Deshawn Goodwyn. All rights reserved."}
+            </p>
             <p className="text-gray-400 text-sm mt-4 md:mt-0">
               All projects available on{" "}
               <a

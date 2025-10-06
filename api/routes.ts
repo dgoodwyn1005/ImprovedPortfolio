@@ -878,6 +878,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Seed initial content (admin only)
+  app.post("/api/admin/seed-content", requireAdminSession, async (req, res) => {
+    try {
+      const { seedContent } = require('./seed-content');
+      await seedContent();
+      res.json({ message: "Content seeded successfully" });
+    } catch (error) {
+      console.error("Error seeding content:", error);
+      res.status(500).json({ error: "Failed to seed content" });
+    }
+  });
+
   // Theme Configuration Management Endpoints
 
   // Get all theme configurations (admin only)

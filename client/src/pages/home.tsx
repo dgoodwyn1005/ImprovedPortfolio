@@ -8,7 +8,6 @@ import Projects from "@/components/projects";
 import Testimonials from "@/components/testimonials";
 import Contact from "@/components/contact";
 import Footer from "@/components/footer";
-import AdSense from "@/components/AdSense";
 
 export default function Home() {
   return (
@@ -27,10 +26,6 @@ export default function Home() {
         </div>
       </div>
       
-      {/* Banner Ad - Mid-page */}
-      <div className="py-6 flex justify-center bg-gray-800 overflow-x-auto">
-        <AdSense format="leaderboard" slot="4444444444" responsive={false} />
-      </div>
       
       <Portfolio />
       <Projects />
