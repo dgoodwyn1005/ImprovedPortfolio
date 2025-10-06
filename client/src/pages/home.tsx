@@ -33,6 +33,7 @@ export default function Home() {
       </div>
       
       <Portfolio />
+      <Projects />
       <Testimonials />
       <Contact />
       <Footer />

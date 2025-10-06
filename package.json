@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "dev:frontend": "vite",
     "build": "vite build",
     "start": "node api/handler.js"
   },

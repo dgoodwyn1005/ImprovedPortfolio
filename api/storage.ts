@@ -189,6 +189,54 @@ export class DatabaseStorage implements IStorage {
   // ==================== PORTFOLIO PROJECTS ====================
   
   async getPortfolioProjects(): Promise<PortfolioProject[]> {
+    // Return mock data if Supabase is not available
+    if (!supabase) {
+      return [
+        {
+          id: "1",
+          title: "Client Website Redesign",
+          description: "Complete website redesign for a local business, improving user experience and increasing conversion rates by 40%.",
+          image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
+          technologies: ["React", "TypeScript", "Tailwind CSS", "Vercel"],
+          year: "2024",
+          featured: true,
+          clientResults: "+40% Conversion",
+          websiteUrl: "https://example.com",
+          order: "1",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "2",
+          title: "E-Learning Platform",
+          description: "Custom e-learning platform with video streaming, progress tracking, and interactive quizzes for an educational institution.",
+          image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop",
+          technologies: ["Next.js", "Node.js", "PostgreSQL", "AWS"],
+          year: "2024",
+          featured: false,
+          clientResults: "500+ Students",
+          websiteUrl: "https://example.com",
+          order: "2",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "3",
+          title: "Restaurant Management System",
+          description: "Full-featured restaurant management system with online ordering, inventory tracking, and staff management capabilities.",
+          image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
+          technologies: ["Vue.js", "Express", "MongoDB", "Stripe"],
+          year: "2023",
+          featured: true,
+          clientResults: "25% Efficiency Gain",
+          websiteUrl: "https://example.com",
+          order: "3",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ];
+    }
+
     const { data, error } = await supabase
       .from('portfolio_projects')
       .select('*')
