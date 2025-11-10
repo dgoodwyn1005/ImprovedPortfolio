@@ -1,44 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Deshawn Goodwyn - Web Developer, AI Specialist & Professional Pianist</title>
-    <meta name="description" content="Freelance Web Developer, AI Implementation Specialist, and Professional Pianist. Custom websites, AI automation, and exceptional music services." />
-    <meta name="keywords" content="web developer, AI specialist, pianist, custom websites, automation, freelance, Deshawn Goodwyn" />
-    
-    <!-- Business verification -->
-    <meta name="google-site-verification" content="GOOGLE_SITE_VERIFICATION_CODE" />
-    
-    <!-- Open Graph meta tags -->
-    <meta property="og:title" content="Deshawn Goodwyn - Web Developer, AI Specialist & Professional Pianist" />
-    <meta property="og:description" content="Freelance Web Developer, AI Implementation Specialist, and Professional Pianist. Custom websites, AI automation, and exceptional music services." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://deshawngoodwyn.com" />
-    
-    <!-- Twitter Card meta tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Deshawn Goodwyn - Web Developer, AI Specialist & Professional Pianist" />
-    <meta name="twitter:description" content="Freelance Web Developer, AI Implementation Specialist, and Professional Pianist. Custom websites, AI automation, and exceptional music services." />
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Calendly CSS -->
-    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
-    
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Calendly JavaScript -->
-    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
-    
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Deshawn Goodwyn | Web Developer & Pianist</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1E40AF;
+      --purple: #6B21A8;
+      --gray: #f4f4f9;
+    }
+    body { font-family: 'Inter', sans-serif; margin: 0; background: var(--gray); color: #333; }
+    header { text-align: center; padding: 4rem 1rem; background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; margin: 0; }
+    .buttons { margin-top: 2rem; }
+    .btn { padding: 1rem 2rem; margin: 0.5rem; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; }
+    .wyntech { background: var(--blue); color: white; }
+    .wynora { background: var(--purple); color: white; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; padding: 1.5rem; }
+    .tag { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: white; }
+    .wyntech-tag { background: var(--blue); }
+    .wynora-tag { background: var(--purple); }
+    footer { text-align: center; padding: 2rem; background: #333; color: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Deshawn Goodwyn</h1>
+    <p>Web Developer • AI Automator • Pianist & Composer</p>
+    <div class="buttons">
+      <a href="https://wyntech.deshawngoodwyn.com" class="btn wyntech">Wyntech → Tech Services</a>
+      <a href="https://wynora.deshawngoodwyn.com" class="btn wynora">Wynora → Piano & Music</a>
+    </div>
+  </header>
+
+  <section class="grid">
+    <div class="card">
+      <img src="wyntech.jpg" alt="AI Chatbot">
+      <h3>AI Booking Chatbot</h3>
+      <p>Built for Dr. Kim using Supabase + n8n</p>
+      <span class="tag wyntech-tag">Wyntech</span>
+      <p><a href="https://wyntech.deshawngoodwyn.com">View Tech Services →</a></p>
+    </div>
+
+    <div class="card">
+      <img src="piano.jpg" alt="Piano Session"> <!-- add this image -->
+      <h3>Luxury Piano Session</h3>
+      <p>Full-day recording & accompaniment</p>
+      <span class="tag wynora-tag">Wynora</span>
+      <p><a href="https://wynora.deshawngoodwyn.com">Book Session →</a></p>
+    </div>
+
+    <div class="card">
+      <img src="ecommerce.jpg" alt="E-Commerce"> <!-- add later -->
+      <h3>Clothing Brand Site</h3>
+      <p>Full stack with Stripe + automation</p>
+      <span class="tag wyntech-tag">Wyntech</span>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Deshawn Goodwyn • 
+    <a href="https://wyntech.deshawngoodwyn.com" style="color:white;">Wyntech</a> • 
+    <a href="https://wynora.deshawngoodwyn.com" style="color:white;">Wynora</a>
+  </footer>
+</body>
 </html>
