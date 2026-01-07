@@ -9,12 +9,17 @@ interface Project {
   title: string
   description: string
   image_url: string | null
-  project_url: string | null
+  live_url?: string | null
+  project_url?: string | null
   github_url: string | null
-  tags: string[] | null
+  tech?: string[] | null
+  tags?: string[] | null
 }
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const liveUrl = project.live_url || project.project_url
+  const technologies = project.tech || project.tags || []
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -24,11 +29,14 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
       className="group"
     >
       <div className="bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 transition-colors">
-        <div className="aspect-video overflow-hidden">
+        <div className="aspect-video overflow-hidden bg-muted">
           <img
             src={project.image_url || "/placeholder.svg?height=400&width=600"}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder.svg?height=400&width=600"
+            }}
           />
         </div>
         <div className="p-5 space-y-3">
@@ -38,15 +46,19 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
               {project.github_url && (
                 <a
                   href={project.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label={`GitHub repo for ${project.title}`}
                 >
                   <Github className="h-4 w-4" />
                 </a>
               )}
-              {project.project_url && (
+              {liveUrl && (
                 <a
-                  href={project.project_url}
+                  href={liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label={`Live demo for ${project.title}`}
                 >
@@ -56,9 +68,9 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             </div>
           </div>
           <p className="text-sm text-muted-foreground">{project.description}</p>
-          {project.tags && project.tags.length > 0 && (
+          {technologies.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {project.tags.map((tech) => (
+              {technologies.map((tech) => (
                 <Badge key={tech} variant="secondary" className="text-xs">
                   {tech}
                 </Badge>

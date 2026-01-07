@@ -6,7 +6,13 @@ import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
 export function HeroSection() {
-  const [backgroundImage, setBackgroundImage] = useState("/basketball-player-silhouette-dramatic-lighting-dar.jpg")
+  const [heroData, setHeroData] = useState({
+    backgroundImage: "/basketball-player-silhouette-dramatic-lighting-dar.jpg",
+    title: "Deshawn Goodwyn",
+    subtitle: "D2 Basketball Starter · Wyntech Founder · Gospel Pianist · Full-Stack Developer",
+    description:
+      "Former Virginia HS 3-point record holder (107 + 105 threes) → 4.56 GPA → Now building web apps and playing keys.",
+  })
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -15,8 +21,13 @@ export function HeroSection() {
 
       const settings = data?.reduce((acc, { key, value }) => ({ ...acc, [key]: value }), {} as Record<string, string>)
 
-      if (settings?.hero_background_image) {
-        setBackgroundImage(settings.hero_background_image)
+      if (settings) {
+        setHeroData({
+          backgroundImage: settings.hero_background_image || heroData.backgroundImage,
+          title: settings.hero_title || heroData.title,
+          subtitle: settings.hero_subtitle || heroData.subtitle,
+          description: settings.hero_description || heroData.description,
+        })
       }
     }
 
@@ -27,26 +38,30 @@ export function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={backgroundImage || "/placeholder.svg"}
-          alt="Deshawn Goodwyn"
-          className="w-full h-full object-cover opacity-30"
-        />
+        {heroData.backgroundImage && (
+          <img
+            src={heroData.backgroundImage || "/placeholder.svg"}
+            alt="Background"
+            className="w-full h-full object-cover opacity-30"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder.svg?height=1080&width=1920"
+            }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
       </div>
 
-      {/* Content */}
+      {/* Content - Now using dynamic heroData */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6">
-            Deshawn Goodwyn
+            {heroData.title}
           </h1>
           <p className="text-primary text-sm sm:text-base font-medium tracking-widest uppercase mb-6">
-            D2 Basketball Starter · Wyntech Founder · Gospel Pianist · Full-Stack Developer
+            {heroData.subtitle}
           </p>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-balance">
-            Former Virginia HS 3-point record holder (107 + 105 threes) → 4.56 GPA → Now building web apps and playing
-            keys.
+            {heroData.description}
           </p>
         </motion.div>
 

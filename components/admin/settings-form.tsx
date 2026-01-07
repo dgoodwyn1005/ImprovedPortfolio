@@ -21,20 +21,21 @@ const settingGroups = [
     title: "Hero Section",
     description: "The main headline area of your portfolio",
     fields: [
-      { key: "hero_title", label: "Title", type: "input" },
-      { key: "hero_subtitle", label: "Subtitle", type: "input" },
+      { key: "hero_title", label: "Title (Your Name)", type: "input" },
+      { key: "hero_subtitle", label: "Subtitle (Roles/Titles)", type: "input" },
       { key: "hero_description", label: "Description", type: "textarea" },
-      { key: "hero_background_image", label: "Background Image URL", type: "image" }, // Added image field
+      { key: "hero_background_image", label: "Background Image", type: "image" },
     ],
   },
   {
     title: "About Section",
     description: "Tell your story",
     fields: [
-      { key: "about_paragraph_1", label: "Paragraph 1", type: "textarea" },
+      { key: "about_paragraph_1", label: "Paragraph 1 (Main intro)", type: "textarea" },
       { key: "about_paragraph_2", label: "Paragraph 2", type: "textarea" },
       { key: "about_paragraph_3", label: "Paragraph 3", type: "textarea" },
-      { key: "about_profile_image", label: "Profile Image URL", type: "image" }, // Added image field
+      { key: "about_profile_image", label: "Profile Image", type: "image" },
+      { key: "resume_url", label: "Resume/Portfolio PDF URL", type: "input" },
     ],
   },
   {
@@ -42,8 +43,8 @@ const settingGroups = [
     icon: ImageIcon,
     description: "Logo and branding assets",
     fields: [
-      { key: "site_logo", label: "Site Logo URL", type: "image" },
-      { key: "site_favicon", label: "Favicon URL", type: "image" },
+      { key: "site_logo", label: "Site Logo", type: "image" },
+      { key: "site_favicon", label: "Favicon", type: "image" },
     ],
   },
   {
@@ -58,8 +59,11 @@ const settingGroups = [
   },
   {
     title: "Contact Section",
-    description: "Contact page heading",
-    fields: [{ key: "contact_heading", label: "Contact Heading", type: "input" }],
+    description: "Contact page content",
+    fields: [
+      { key: "contact_heading", label: "Contact Heading", type: "input" },
+      { key: "contact_description", label: "Contact Description", type: "textarea" },
+    ],
   },
   {
     title: "Brand Colors",
@@ -76,7 +80,7 @@ const settingGroups = [
 export function SettingsForm({ settings }: SettingsFormProps) {
   const [formData, setFormData] = useState(settings)
   const [isLoading, setIsLoading] = useState(false)
-  const [uploadingFields, setUploadingFields] = useState<Record<string, boolean>>({}) // Track upload states
+  const [uploadingFields, setUploadingFields] = useState<Record<string, boolean>>({})
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const router = useRouter()
 
@@ -125,7 +129,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         if (error) throw error
       }
 
-      setMessage({ type: "success", text: "Settings saved successfully!" })
+      setMessage({ type: "success", text: "Settings saved successfully! Changes will appear on refresh." })
       router.refresh()
     } catch (err) {
       setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to save settings" })

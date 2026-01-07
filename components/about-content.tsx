@@ -12,13 +12,21 @@ interface Stat {
 
 interface AboutContentProps {
   profileImage?: string
-  aboutIntro?: string
-  aboutDescription?: string
+  aboutParagraph1?: string
+  aboutParagraph2?: string
+  aboutParagraph3?: string
   resumeUrl?: string
   stats: Stat[]
 }
 
-export function AboutContent({ profileImage, aboutIntro, aboutDescription, resumeUrl, stats }: AboutContentProps) {
+export function AboutContent({
+  profileImage,
+  aboutParagraph1,
+  aboutParagraph2,
+  aboutParagraph3,
+  resumeUrl,
+  stats,
+}: AboutContentProps) {
   return (
     <section id="about" className="py-24 sm:py-32">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,16 +48,25 @@ export function AboutContent({ profileImage, aboutIntro, aboutDescription, resum
                 <div className="max-w-xs mx-auto">
                   <img
                     src={profileImage || "/placeholder.svg"}
-                    alt="Deshawn Goodwyn"
+                    alt="Profile"
                     className="w-full rounded-lg shadow-lg"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none"
+                    }}
                   />
                 </div>
               </div>
             )}
 
             <div className="md:col-span-3 space-y-6">
-              <p className="text-lg text-foreground leading-relaxed">{aboutIntro || "Welcome to my portfolio."}</p>
-              <p className="text-muted-foreground leading-relaxed">{aboutDescription || ""}</p>
+              {aboutParagraph1 && <p className="text-lg text-foreground leading-relaxed">{aboutParagraph1}</p>}
+              {aboutParagraph2 && <p className="text-muted-foreground leading-relaxed">{aboutParagraph2}</p>}
+              {aboutParagraph3 && <p className="text-muted-foreground leading-relaxed">{aboutParagraph3}</p>}
+              {!aboutParagraph1 && !aboutParagraph2 && !aboutParagraph3 && (
+                <p className="text-lg text-foreground leading-relaxed">
+                  Welcome to my portfolio. Edit this text in the Admin Settings.
+                </p>
+              )}
             </div>
 
             <div className="md:col-span-2">

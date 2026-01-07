@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Plus, Pencil, Trash2, Loader2, GripVertical } from "lucide-react"
+import { Plus, Pencil, Trash2, Loader2, GripVertical, Upload } from "lucide-react"
 
 interface Project {
   id: string
@@ -38,6 +38,7 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
   const router = useRouter()
 
   const [formData, setFormData] = useState({
@@ -145,6 +146,33 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
     }
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploadingImage(true)
+    const uploadFormData = new FormData()
+    uploadFormData.append("file", file)
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      })
+
+      if (!res.ok) throw new Error("Upload failed")
+
+      const data = await res.json()
+      setFormData({ ...formData, image_url: data.url })
+    } catch (error) {
+      console.error("Upload error:", error)
+      alert("Failed to upload image")
+    } finally {
+      setIsUploadingImage(false)
+      e.target.value = ""
+    }
+  }
+
   return (
     <div className="space-y-4">
       <Dialog
@@ -160,7 +188,7 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
             Add Project
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingProject ? "Edit Project" : "Add New Project"}</DialogTitle>
             <DialogDescription>Fill in the project details below.</DialogDescription>
@@ -194,13 +222,45 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image_url">Image URL</Label>
-              <Input
-                id="image_url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="/project-management-dashboard.png"
-              />
+              <Label htmlFor="image_url">Project Image</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    id="image_url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="Enter URL or upload image"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isUploadingImage}
+                    onClick={() => document.getElementById("project-image-upload")?.click()}
+                  >
+                    {isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  </Button>
+                  <input
+                    id="project-image-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                </div>
+                {formData.image_url && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <img
+                      src={formData.image_url || "/placeholder.svg"}
+                      alt="Project preview"
+                      className="w-full h-32 object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder.svg?height=200&width=400"
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

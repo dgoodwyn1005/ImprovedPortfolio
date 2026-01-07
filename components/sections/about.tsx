@@ -13,8 +13,9 @@ export async function AboutSection() {
   return (
     <AboutContent
       profileImage={settings.about_profile_image}
-      aboutIntro={settings.about_intro}
-      aboutDescription={settings.about_description}
+      aboutParagraph1={settings.about_paragraph_1}
+      aboutParagraph2={settings.about_paragraph_2}
+      aboutParagraph3={settings.about_paragraph_3}
       resumeUrl={settings.resume_url}
       stats={stats || []}
     />
