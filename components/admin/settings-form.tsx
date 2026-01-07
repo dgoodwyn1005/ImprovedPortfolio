@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Save, Loader2, Palette, ImageIcon, Upload } from "lucide-react"
+import { ImagePicker } from "@/components/admin/image-picker"
 
 interface SettingsFormProps {
   settings: Record<string, string>
@@ -172,11 +173,16 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                     </div>
                   ) : field.type === "image" ? (
                     <div className="space-y-2">
+                      <ImagePicker
+                        value={formData[field.key] || ""}
+                        onChange={(url) => handleChange(field.key, url)}
+                        label="Choose from Gallery"
+                      />
                       <div className="flex gap-2">
                         <Input
                           value={formData[field.key] || ""}
                           onChange={(e) => handleChange(field.key, e.target.value)}
-                          placeholder="Enter image URL or upload"
+                          placeholder="Or enter image URL directly"
                           className="flex-1"
                         />
                         <Button

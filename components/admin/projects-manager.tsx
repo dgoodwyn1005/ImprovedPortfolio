@@ -20,6 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Pencil, Trash2, Loader2, GripVertical, Upload } from "lucide-react"
+import { ImagePicker } from "@/components/admin/image-picker"
 
 interface Project {
   id: string
@@ -224,12 +225,17 @@ export function ProjectsManager({ initialProjects }: { initialProjects: Project[
             <div className="space-y-2">
               <Label htmlFor="image_url">Project Image</Label>
               <div className="space-y-2">
+                <ImagePicker
+                  value={formData.image_url}
+                  onChange={(url) => setFormData({ ...formData, image_url: url })}
+                  label="Choose from Gallery"
+                />
                 <div className="flex gap-2">
                   <Input
                     id="image_url"
                     value={formData.image_url}
                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="Enter URL or upload image"
+                    placeholder="Or enter URL directly"
                     className="flex-1"
                   />
                   <Button
