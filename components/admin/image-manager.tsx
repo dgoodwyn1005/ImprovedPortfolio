@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Upload, Trash2, Copy, Check, Loader2, ImageIcon } from "lucide-react"
+import { Upload, Trash2, Copy, Check, Loader2, ImageIcon, AlertCircle } from "lucide-react"
 
 interface ImageFile {
   url: string
@@ -20,6 +20,7 @@ export function ImageManager() {
   const [isUploading, setIsUploading] = useState(false)
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadImages()
@@ -41,7 +42,34 @@ export function ImageManager() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    setError(null)
     setIsUploading(true)
+
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/svg+xml",
+      "image/avif",
+    ]
+
+    if (!allowedTypes.includes(file.type)) {
+      setError(`Invalid file type. Please upload: JPG, PNG, GIF, WebP, SVG, or AVIF`)
+      setIsUploading(false)
+      e.target.value = ""
+      return
+    }
+
+    if (file.size > maxSize) {
+      setError(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 10MB.`)
+      setIsUploading(false)
+      e.target.value = ""
+      return
+    }
+
     const formData = new FormData()
     formData.append("file", file)
 
@@ -51,12 +79,16 @@ export function ImageManager() {
         body: formData,
       })
 
-      if (!res.ok) throw new Error("Upload failed")
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed")
+      }
 
       await loadImages()
-    } catch (error) {
-      console.error("Upload error:", error)
-      alert("Failed to upload image")
+    } catch (err) {
+      console.error("Upload error:", err)
+      setError(err instanceof Error ? err.message : "Failed to upload image. Please try again.")
     } finally {
       setIsUploading(false)
       e.target.value = ""
@@ -100,28 +132,39 @@ export function ImageManager() {
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              disabled={isUploading}
-              className="flex-1"
-              id="image-upload"
-            />
-            <Button disabled={isUploading} onClick={() => document.getElementById("image-upload")?.click()}>
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Image
-                </>
-              )}
-            </Button>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,image/avif"
+                onChange={handleUpload}
+                disabled={isUploading}
+                className="flex-1"
+                id="image-upload"
+              />
+              <Button disabled={isUploading} onClick={() => document.getElementById("image-upload")?.click()}>
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Image
+                  </>
+                )}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Accepted formats: JPG, PNG, GIF, WebP, SVG, AVIF. Max size: 10MB.
+            </p>
+            {error && (
+              <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
