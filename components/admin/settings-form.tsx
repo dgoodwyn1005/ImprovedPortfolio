@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Save, Loader2, Palette, ImageIcon, Upload } from "lucide-react"
+import { Save, Loader2, Palette, ImageIcon, Upload, Calendar } from "lucide-react"
 import { ImagePicker } from "@/components/admin/image-picker"
 
 interface SettingsFormProps {
@@ -49,14 +49,12 @@ const settingGroups = [
     ],
   },
   {
-    title: "Music Section",
-    description: "Description for your music services",
-    fields: [{ key: "music_description", label: "Music Description", type: "textarea" }],
-  },
-  {
-    title: "Basketball Section",
-    description: "Description for your basketball training",
-    fields: [{ key: "basketball_description", label: "Basketball Description", type: "textarea" }],
+    title: "Calendly Integration",
+    icon: Calendar,
+    description: "Allow visitors to schedule calls with you",
+    fields: [
+      { key: "calendly_url", label: "Calendly URL", type: "input", placeholder: "https://calendly.com/your-username" },
+    ],
   },
   {
     title: "Contact Section",
@@ -121,7 +119,6 @@ export function SettingsForm({ settings }: SettingsFormProps) {
     const supabase = createClient()
 
     try {
-      // Update each setting
       for (const [key, value] of Object.entries(formData)) {
         const { error } = await supabase
           .from("site_settings")
@@ -230,6 +227,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                       id={field.key}
                       value={formData[field.key] || ""}
                       onChange={(e) => handleChange(field.key, e.target.value)}
+                      placeholder={(field as any).placeholder || ""}
                     />
                   )}
                 </div>

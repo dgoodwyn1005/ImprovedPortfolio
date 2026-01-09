@@ -2,8 +2,8 @@ import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/sections/hero"
 import { AboutSection } from "@/components/sections/about"
 import { ProjectsSection } from "@/components/sections/projects"
-import { MusicSection } from "@/components/sections/music"
-import { BasketballSection } from "@/components/sections/basketball"
+import { VenturesSection } from "@/components/sections/ventures"
+import { PhotoGallerySection } from "@/components/sections/photo-gallery"
 import { ContactSection } from "@/components/sections/contact"
 import { Footer } from "@/components/footer"
 import { createClient } from "@/lib/supabase/server"
@@ -27,9 +27,9 @@ export default async function Home() {
       <Navbar />
       <HeroSection />
       <AboutSection />
+      <PhotoGallerySection />
+      <VenturesSection />
       <ProjectsSection />
-      <MusicSection pricing={musicPricing} videos={musicVideos} />
-      <BasketballSection pricing={basketballPricing} videos={basketballVideos} />
       <ContactSection />
       <Footer />
     </main>

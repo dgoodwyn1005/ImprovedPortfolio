@@ -1,10 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Mail, Phone, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Mail, Phone } from "lucide-react"
+import { ContactForm } from "@/components/contact-form"
+import { CalendlyEmbed } from "@/components/calendly-embed"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 interface FAQ {
@@ -15,9 +14,11 @@ interface FAQ {
 
 interface Company {
   name: string
+  slug: string
   contact_email: string
   contact_phone: string
   primary_color: string
+  calendly_url?: string
 }
 
 export function CompanyContact({ company, faqs }: { company: Company; faqs: FAQ[] }) {
@@ -34,6 +35,11 @@ export function CompanyContact({ company, faqs }: { company: Company; faqs: FAQ[
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Ready to start your project? Let's talk about how we can help.
           </p>
+          {company.calendly_url && (
+            <div className="mt-6">
+              <CalendlyEmbed url={company.calendly_url} buttonText="Schedule a Consultation" />
+            </div>
+          )}
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -45,18 +51,7 @@ export function CompanyContact({ company, faqs }: { company: Company; faqs: FAQ[
             className="bg-card border border-border rounded-2xl p-8"
           >
             <h3 className="text-xl font-semibold text-foreground mb-6">Send us a message</h3>
-            <form className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Input placeholder="Your name" />
-                <Input placeholder="Your email" type="email" />
-              </div>
-              <Input placeholder="Subject" />
-              <Textarea placeholder="Tell us about your project..." rows={5} />
-              <Button className="w-full text-white" style={{ backgroundColor: company.primary_color }}>
-                <Send className="mr-2 h-4 w-4" />
-                Send Message
-              </Button>
-            </form>
+            <ContactForm companySlug={company.slug} submissionType="quote" buttonText="Request Quote" />
 
             <div className="mt-8 pt-8 border-t border-border space-y-4">
               {company.contact_email && (

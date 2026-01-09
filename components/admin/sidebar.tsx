@@ -24,19 +24,23 @@ import {
   ChevronDown,
   ChevronRight,
   ShoppingCart,
+  Camera,
+  Inbox,
 } from "lucide-react"
 import { useState } from "react"
 
 const mainNavItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Site Settings", href: "/admin/settings", icon: Settings },
-  { name: "Images", href: "/admin/images", icon: ImageIcon }, // Updated Images menu item
+  { name: "Images", href: "/admin/images", icon: ImageIcon },
+  { name: "Photo Gallery", href: "/admin/gallery", icon: Camera }, // Added Photo Gallery menu item
   { name: "Projects", href: "/admin/projects", icon: Folders },
   { name: "Social Links", href: "/admin/social-links", icon: Link2 },
   { name: "Pricing", href: "/admin/pricing", icon: DollarSign },
   { name: "Videos", href: "/admin/videos", icon: Video },
   { name: "Quick Stats", href: "/admin/stats", icon: BarChart3 },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { name: "Submissions", href: "/admin/submissions", icon: Inbox }, // Added Submissions menu item
 ]
 
 const companyNavItems = [
@@ -44,7 +48,7 @@ const companyNavItems = [
   { name: "Services", href: "/admin/companies/services", icon: Briefcase },
   { name: "Team", href: "/admin/companies/team", icon: Users },
   { name: "Testimonials", href: "/admin/companies/testimonials", icon: MessageSquare },
-  { name: "Portfolio", href: "/admin/companies/portfolio", icon: ImageIcon }, // Updated Portfolio menu item
+  { name: "Portfolio", href: "/admin/companies/portfolio", icon: ImageIcon },
   { name: "FAQs", href: "/admin/companies/faqs", icon: HelpCircle },
 ]
 
