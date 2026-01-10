@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Github, Instagram, Linkedin, Mail, Twitter, Youtube } from "lucide-react"
 import { ContactForm } from "@/components/contact-form"
-import { CalendlyEmbed } from "@/components/calendly-embed"
+import { SchedulingButton } from "@/components/scheduling-button"
 
 const iconMap: Record<string, any> = {
   Mail,
@@ -27,7 +27,8 @@ interface ContactContentProps {
 }
 
 export function ContactContent({ settings, socialLinks }: ContactContentProps) {
-  const calendlyUrl = settings.calendly_url
+  const schedulingUrl = settings.scheduling_url || settings.calendly_url
+  const schedulingButtonText = settings.scheduling_button_text || "Schedule a Call"
 
   return (
     <section id="contact" className="py-24 sm:py-32">
@@ -51,7 +52,7 @@ export function ContactContent({ settings, socialLinks }: ContactContentProps) {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 items-center">
-              {calendlyUrl && <CalendlyEmbed url={calendlyUrl} buttonText="Schedule a Call" />}
+              {schedulingUrl && <SchedulingButton url={schedulingUrl} buttonText={schedulingButtonText} />}
               {socialLinks && socialLinks.length > 0 && (
                 <div className="flex gap-2">
                   {socialLinks.map((link) => {

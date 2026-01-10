@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Mail, Phone } from "lucide-react"
 import { ContactForm } from "@/components/contact-form"
-import { CalendlyEmbed } from "@/components/calendly-embed"
+import { SchedulingButton } from "@/components/scheduling-button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 interface FAQ {
@@ -19,9 +19,12 @@ interface Company {
   contact_phone: string
   primary_color: string
   calendly_url?: string
+  scheduling_url?: string
 }
 
 export function CompanyContact({ company, faqs }: { company: Company; faqs: FAQ[] }) {
+  const schedulingUrl = company.scheduling_url || company.calendly_url
+
   return (
     <section id="contact" className="py-24 bg-muted/30">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,9 +38,9 @@ export function CompanyContact({ company, faqs }: { company: Company; faqs: FAQ[
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Ready to start your project? Let's talk about how we can help.
           </p>
-          {company.calendly_url && (
+          {schedulingUrl && (
             <div className="mt-6">
-              <CalendlyEmbed url={company.calendly_url} buttonText="Schedule a Consultation" />
+              <SchedulingButton url={schedulingUrl} buttonText="Schedule a Consultation" />
             </div>
           )}
         </motion.div>

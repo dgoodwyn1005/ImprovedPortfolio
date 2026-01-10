@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Save, Loader2, Palette, ImageIcon, Upload, Calendar } from "lucide-react"
+import { Save, Loader2, Palette, ImageIcon, Upload, Link } from "lucide-react"
 import { ImagePicker } from "@/components/admin/image-picker"
 
 interface SettingsFormProps {
@@ -49,11 +49,17 @@ const settingGroups = [
     ],
   },
   {
-    title: "Calendly Integration",
-    icon: Calendar,
-    description: "Allow visitors to schedule calls with you",
+    title: "Scheduling",
+    icon: Link,
+    description: "Allow visitors to book time with you (Google Calendar, Calendly, Cal.com, or any booking link)",
     fields: [
-      { key: "calendly_url", label: "Calendly URL", type: "input", placeholder: "https://calendly.com/your-username" },
+      {
+        key: "scheduling_url",
+        label: "Scheduling Link",
+        type: "input",
+        placeholder: "https://calendar.google.com/calendar/appointments/... or https://calendly.com/...",
+      },
+      { key: "scheduling_button_text", label: "Button Text", type: "input", placeholder: "Schedule a Call" },
     ],
   },
   {
