@@ -26,12 +26,15 @@ import {
   ShoppingCart,
   Camera,
   Inbox,
+  FileText,
+  CreditCard,
 } from "lucide-react"
 import { useState } from "react"
 
 const mainNavItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Site Settings", href: "/admin/settings", icon: Settings },
+  { name: "Stripe", href: "/admin/stripe", icon: CreditCard }, // Added Stripe menu item
   { name: "Images", href: "/admin/images", icon: ImageIcon },
   { name: "Photo Gallery", href: "/admin/gallery", icon: Camera }, // Added Photo Gallery menu item
   { name: "Projects", href: "/admin/projects", icon: Folders },
@@ -41,6 +44,7 @@ const mainNavItems = [
   { name: "Quick Stats", href: "/admin/stats", icon: BarChart3 },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { name: "Submissions", href: "/admin/submissions", icon: Inbox }, // Added Submissions menu item
+  { name: "Create Invoice", href: "/admin/invoices", icon: FileText }, // Added Invoices menu item
 ]
 
 const companyNavItems = [
