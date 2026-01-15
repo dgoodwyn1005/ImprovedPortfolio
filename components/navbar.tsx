@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Moon, Sun } from "lucide-react"
+import { Menu, X, Moon, Sun, Linkedin } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -11,8 +11,8 @@ import { createClient } from "@/lib/supabase/client"
 const navLinks = [
   { name: "About", href: "#about" },
   { name: "Projects", href: "#projects" },
-  { name: "Music", href: "#music" },
-  { name: "Basketball", href: "#basketball" },
+  { name: "Ventures", href: "#ventures" },
+  { name: "Gallery", href: "#gallery" },
   { name: "Contact", href: "#contact" },
 ]
 
@@ -27,6 +27,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [logo, setLogo] = useState("")
+  const [linkedinUrl, setLinkedinUrl] = useState("")
 
   useEffect(() => {
     setMounted(true)
@@ -35,15 +36,27 @@ export function Navbar() {
     }
     window.addEventListener("scroll", handleScroll)
 
-    const loadLogo = async () => {
+    const loadData = async () => {
       const supabase = createClient()
-      const { data } = await supabase.from("site_settings").select("value").eq("key", "site_logo").single()
 
-      if (data?.value) {
-        setLogo(data.value)
+      // Load logo
+      const { data: logoData } = await supabase.from("site_settings").select("value").eq("key", "site_logo").single()
+
+      if (logoData?.value) {
+        setLogo(logoData.value)
+      }
+
+      const { data: linkedinData } = await supabase
+        .from("social_links")
+        .select("url")
+        .ilike("name", "%linkedin%")
+        .single()
+
+      if (linkedinData?.url) {
+        setLinkedinUrl(linkedinData.url)
       }
     }
-    loadLogo()
+    loadData()
 
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -94,6 +107,17 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
+            {linkedinUrl && (
+              <a
+                href={linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+            )}
             {mounted && (
               <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -103,6 +127,17 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            {linkedinUrl && (
+              <a
+                href={linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+            )}
             {mounted && (
               <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -148,6 +183,20 @@ export function Navbar() {
                   </Link>
                 ))}
               </div>
+              {linkedinUrl && (
+                <div className="border-t border-border pt-2 mt-2">
+                  <a
+                    href={linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 py-2 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                    LinkedIn
+                  </a>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
