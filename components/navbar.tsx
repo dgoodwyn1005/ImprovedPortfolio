@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Moon, Sun, Linkedin } from "lucide-react"
+import { Menu, X, Moon, Sun, Linkedin, ShoppingBag } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -12,12 +12,13 @@ const navLinks = [
   { name: "About", href: "#about" },
   { name: "Projects", href: "#projects" },
   { name: "Ventures", href: "#ventures" },
+  { name: "Videos", href: "#videos" },
   { name: "Gallery", href: "#gallery" },
   { name: "Contact", href: "#contact" },
 ]
 
 const companyLinks = [
-  { name: "WynTech", href: "/wyntech" },
+  { name: "Wyntech", href: "/wyntech" }, // Changed WynTech to Wyntech (lowercase t)
   { name: "Wynora", href: "/wynora" },
 ]
 
@@ -107,6 +108,13 @@ export function Navbar() {
                 {link.name}
               </Link>
             ))}
+            <Link
+              href="/shop"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Shop
+            </Link>
             {linkedinUrl && (
               <a
                 href={linkedinUrl}
@@ -182,6 +190,16 @@ export function Navbar() {
                     {link.name}
                   </Link>
                 ))}
+              </div>
+              <div className="border-t border-border pt-2 mt-2">
+                <Link
+                  href="/shop"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 py-2 font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <ShoppingBag className="h-5 w-5" />
+                  Shop
+                </Link>
               </div>
               {linkedinUrl && (
                 <div className="border-t border-border pt-2 mt-2">

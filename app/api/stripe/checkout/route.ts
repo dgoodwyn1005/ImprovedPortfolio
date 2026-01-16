@@ -26,6 +26,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No price found for this product" }, { status: 400 })
     }
 
+    const origin = request.headers.get("origin")
+    const host = request.headers.get("host")
+    let baseUrl: string
+
+    if (origin && origin.startsWith("http")) {
+      baseUrl = origin
+    } else if (host) {
+      // Default to https, use http only for localhost
+      const protocol = host.includes("localhost") ? "http" : "https"
+      baseUrl = `${protocol}://${host}`
+    } else {
+      // Fallback to the request URL
+      const url = new URL(request.url)
+      baseUrl = `${url.protocol}//${url.host}`
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -37,11 +53,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       customer_email: customerEmail,
-      success_url: successUrl || `${request.headers.get("origin")}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${request.headers.get("origin")}/`,
-      metadata: {
-        productId,
-      },
+      success_url: successUrl || `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl || `${baseUrl}/shop`,
     })
 
     return NextResponse.json({ url: session.url, sessionId: session.id })
