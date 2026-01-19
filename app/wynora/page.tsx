@@ -7,6 +7,7 @@ import { CompanyPortfolio } from "@/components/company/portfolio"
 import { CompanyTestimonials } from "@/components/company/testimonials"
 import { CompanyContact } from "@/components/company/contact"
 import { CompanyFooter } from "@/components/company/footer"
+import { MusicSection } from "@/components/company/music-section"
 import { notFound } from "next/navigation"
 
 export const metadata = {
@@ -51,11 +52,21 @@ export default async function WynoraPage() {
     .eq("is_visible", true)
     .order("display_order")
 
+  const { data: audioClips } = await supabase
+    .from("audio_clips")
+    .select("*")
+    .eq("company_id", company.id)
+    .eq("is_visible", true)
+    .order("display_order")
+
   return (
     <main className="min-h-screen">
       <CompanyNavbar company={company} />
       <CompanyHero company={company} />
       <CompanyAbout company={company} />
+      {audioClips && audioClips.length > 0 && (
+        <MusicSection clips={audioClips} companyName={company.name} />
+      )}
       <CompanyServices company={company} services={services || []} />
       <CompanyPortfolio company={company} portfolio={portfolio || []} />
       <CompanyTestimonials company={company} testimonials={testimonials || []} />

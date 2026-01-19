@@ -28,6 +28,7 @@ import {
   Inbox,
   FileText,
   CreditCard,
+  Music,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -41,6 +42,7 @@ const mainNavItems = [
   { name: "Social Links", href: "/admin/social-links", icon: Link2 },
   { name: "Pricing", href: "/admin/pricing", icon: DollarSign },
   { name: "Videos", href: "/admin/videos", icon: Video },
+  { name: "Audio Clips", href: "/admin/audio", icon: Music },
   { name: "Quick Stats", href: "/admin/stats", icon: BarChart3 },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
   { name: "Submissions", href: "/admin/submissions", icon: Inbox }, // Added Submissions menu item

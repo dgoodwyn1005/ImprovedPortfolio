@@ -1,8 +1,8 @@
 import { put } from "@vercel/blob"
 import { type NextRequest, NextResponse } from "next/server"
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_TYPES = [
+const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB for audio files
+const ALLOWED_IMAGE_TYPES = [
   "image/jpeg",
   "image/jpg",
   "image/png",
@@ -13,6 +13,19 @@ const ALLOWED_TYPES = [
   "image/heic",
   "image/heif",
 ]
+const ALLOWED_AUDIO_TYPES = [
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/wave",
+  "audio/x-wav",
+  "audio/ogg",
+  "audio/aac",
+  "audio/m4a",
+  "audio/x-m4a",
+  "audio/flac",
+]
+const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_AUDIO_TYPES]
 
 function getExtension(filename: string, mimeType: string): string {
   const ext = filename.split(".").pop()?.toLowerCase()
@@ -28,6 +41,16 @@ function getExtension(filename: string, mimeType: string): string {
     "image/avif": "avif",
     "image/heic": "heic",
     "image/heif": "heif",
+    "audio/mpeg": "mp3",
+    "audio/mp3": "mp3",
+    "audio/wav": "wav",
+    "audio/wave": "wav",
+    "audio/x-wav": "wav",
+    "audio/ogg": "ogg",
+    "audio/aac": "aac",
+    "audio/m4a": "m4a",
+    "audio/x-m4a": "m4a",
+    "audio/flac": "flac",
   }
 
   return ext || mimeToExt[mimeType] || "jpg"
@@ -43,13 +66,15 @@ export async function POST(request: NextRequest) {
     }
 
     const fileExtension = file.name.split(".").pop()?.toLowerCase()
-    const allowedExtensions = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "heic", "heif"]
+    const allowedImageExtensions = ["jpg", "jpeg", "png", "gif", "webp", "svg", "avif", "heic", "heif"]
+    const allowedAudioExtensions = ["mp3", "wav", "ogg", "aac", "m4a", "flac"]
+    const allowedExtensions = [...allowedImageExtensions, ...allowedAudioExtensions]
 
     const isValidType = ALLOWED_TYPES.includes(file.type) || allowedExtensions.includes(fileExtension || "")
 
     if (!isValidType) {
       return NextResponse.json(
-        { error: `Invalid file type. Allowed: JPG, PNG, GIF, WebP, SVG, AVIF, HEIC` },
+        { error: `Invalid file type. Allowed: Images (JPG, PNG, GIF, WebP) or Audio (MP3, WAV, OGG, AAC, M4A)` },
         { status: 400 },
       )
     }
