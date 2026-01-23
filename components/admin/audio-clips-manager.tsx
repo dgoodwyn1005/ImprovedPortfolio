@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, Edit2, Save, X, Upload, Music, Play, Pause } from "lucide-react"
+import { Plus, Trash2, Edit2, Save, X, Upload, Music, Play, Pause, Scissors } from "lucide-react"
+import { AudioTrimmer } from "./audio-trimmer"
 
 interface AudioClip {
   id: string
@@ -38,6 +39,7 @@ export function AudioClipsManager() {
   const [uploading, setUploading] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
   const [playingId, setPlayingId] = useState<string | null>(null)
+  const [showTrimmer, setShowTrimmer] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [formData, setFormData] = useState({
     title: "",
@@ -85,6 +87,26 @@ export function AudioClipsManager() {
       const data = await res.json()
       if (data.url) {
         setFormData((prev) => ({ ...prev, audio_url: data.url }))
+      } else {
+        alert(data.error || "Upload failed")
+      }
+    } catch {
+      alert("Upload failed")
+    }
+    setUploading(false)
+  }
+
+  async function handleTrimComplete(blob: Blob, duration: string) {
+    setUploading(true)
+    try {
+      const file = new File([blob], "trimmed-audio.wav", { type: "audio/wav" })
+      const formDataUpload = new FormData()
+      formDataUpload.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: formDataUpload })
+      const data = await res.json()
+      if (data.url) {
+        setFormData((prev) => ({ ...prev, audio_url: data.url, duration }))
+        setShowTrimmer(false)
       } else {
         alert(data.error || "Upload failed")
       }
@@ -225,29 +247,50 @@ export function AudioClipsManager() {
 
             <div className="space-y-2">
               <Label>Audio File *</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={formData.audio_url}
-                  onChange={(e) => setFormData({ ...formData, audio_url: e.target.value })}
-                  placeholder="Audio URL"
-                  className="flex-1"
+              {showTrimmer ? (
+                <AudioTrimmer
+                  maxDuration={30}
+                  onTrimComplete={handleTrimComplete}
+                  onCancel={() => setShowTrimmer(false)}
                 />
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="audio/*"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && uploadAudio(e.target.files[0])}
-                  />
-                  <Button type="button" variant="outline" disabled={uploading} asChild>
-                    <span>
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploading ? "Uploading..." : "Upload"}
-                    </span>
-                  </Button>
-                </label>
-              </div>
-              {formData.audio_url && (
+              ) : (
+                <>
+                  <div className="flex gap-2">
+                    <Input
+                      value={formData.audio_url}
+                      onChange={(e) => setFormData({ ...formData, audio_url: e.target.value })}
+                      placeholder="Audio URL"
+                      className="flex-1"
+                    />
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="audio/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && uploadAudio(e.target.files[0])}
+                      />
+                      <Button type="button" variant="outline" disabled={uploading} asChild>
+                        <span>
+                          <Upload className="w-4 h-4 mr-2" />
+                          {uploading ? "Uploading..." : "Upload Full"}
+                        </span>
+                      </Button>
+                    </label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowTrimmer(true)}
+                    >
+                      <Scissors className="w-4 h-4 mr-2" />
+                      Trim Clip
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Use "Trim Clip" to upload longer files and select a 30-second snippet
+                  </p>
+                </>
+              )}
+              {formData.audio_url && !showTrimmer && (
                 <audio controls className="w-full mt-2">
                   <source src={formData.audio_url} />
                 </audio>
